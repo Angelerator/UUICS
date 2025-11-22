@@ -1,0 +1,62 @@
+{
+  "name": "@uuics/core",
+  "version": "1.0.0",
+  "description": "Universal UI Context System - AI-powered web interface understanding and interaction",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "ui-automation",
+    "dom-scanner",
+    "context",
+    "claude",
+    "gpt",
+    "web-automation",
+    "ai-agent",
+    "rpa",
+    "testing",
+    "accessibility",
+    "state-tracking",
+    "action-chaining",
+    "framework-agnostic"
+  ],
+  "author": "SuperDuck",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/uuics.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/uuics#readme",
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/uuics/issues"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "css-selector-generator": "^3.7.0"
+  }
+}

@@ -1,0 +1,2 @@
+export { DOMScanner } from './DOMScanner';
+

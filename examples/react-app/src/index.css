@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-primary to-secondary min-h-screen;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-xl p-7 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  .btn {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-dark hover:-translate-y-0.5 hover:shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply btn bg-gray-600 text-white hover:bg-gray-800;
+  }
+
+  .btn-success {
+    @apply btn bg-green-500 text-white hover:bg-green-600;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600;
+  }
+
+  .btn-outline {
+    @apply btn bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-white;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all;
+  }
+
+  .label {
+    @apply block mb-2 font-semibold text-gray-700 text-sm;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-primary mb-4 flex items-center gap-2;
+  }
+
+  .section-title::before {
+    content: '';
+    @apply w-1 h-5 bg-primary rounded;
+  }
+
+  .info-box {
+    @apply bg-gradient-to-r from-primary/10 to-secondary/10 border-l-4 border-primary p-4 rounded-lg mb-5 text-sm leading-relaxed;
+  }
+
+  .prompt-item {
+    @apply p-3 bg-white rounded-lg border-l-4 border-primary text-sm text-gray-600 transition-all cursor-pointer hover:bg-primary hover:text-white hover:translate-x-1;
+  }
+}

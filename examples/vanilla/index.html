@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UUICS - Comprehensive Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .panel.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .panel h2 {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+      font-size: 1.3em;
+    }
+
+    .section {
+      margin-bottom: 25px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+
+    .section h3 {
+      color: #555;
+      margin-bottom: 12px;
+      font-size: 1.1em;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #555;
+      font-size: 14px;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]), 
+    textarea, 
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    [contenteditable="true"] {
+      border: 2px dashed #ddd;
+      padding: 10px;
+      border-radius: 6px;
+      min-height: 50px;
+      background: white;
+      cursor: text;
+    }
+
+    [contenteditable="true"]:focus {
+      border-color: #667eea;
+      outline: none;
+      background: #f9f9ff;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    button.secondary {
+      background: #6c757d;
+    }
+
+    button.secondary:hover {
+      background: #5a6268;
+    }
+
+    button.success {
+      background: #28a745;
+    }
+
+    button.success:hover {
+      background: #218838;
+    }
+
+    button.danger {
+      background: #dc3545;
+    }
+
+    button.danger:hover {
+      background: #c82333;
+    }
+
+    .custom-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.3s;
+    }
+
+    .custom-button:hover {
+      background: #5568d3;
+      transform: translateY(-1px);
+    }
+
+    .controls-panel {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .controls-panel h3 {
+      color: #856404;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    .control-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .control-label {
+      font-weight: 600;
+      color: #856404;
+      margin-right: 10px;
+    }
+
+    select.inline {
+      width: auto;
+      min-width: 200px;
+    }
+
+    #output-panel {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      max-height: 500px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .stats {
+      background: #e7f3ff;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      color: #004085;
+      border-left: 4px solid #004085;
+    }
+
+    .checkbox-group, .radio-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-item, .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    input[type="checkbox"], input[type="radio"] {
+      width: auto;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    progress, meter {
+      width: 100%;
+      height: 30px;
+      border-radius: 4px;
+    }
+
+    details {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #667eea;
+      padding: 5px;
+      user-select: none;
+    }
+
+    summary:hover {
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    dialog {
+      border: none;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      max-width: 500px;
+    }
+
+    dialog::backdrop {
+      background: rgba(0,0,0,0.5);
+    }
+
+    dialog h3 {
+      margin-bottom: 15px;
+      color: #667eea;
+    }
+
+    output {
+      display: inline-block;
+      padding: 8px 12px;
+      background: #e7f3ff;
+      border-radius: 4px;
+      font-weight: bold;
+      color: #004085;
+    }
+
+    fieldset {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    legend {
+      font-weight: 600;
+      color: #667eea;
+      padding: 0 10px;
+    }
+
+    .aria-checkbox, .aria-switch {
+      display: inline-block;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .aria-checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #667eea;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .aria-checkbox::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .aria-checkbox[aria-checked="true"] {
+      background: #667eea;
+    }
+
+    .aria-checkbox[aria-checked="true"]::after {
+      opacity: 1;
+    }
+
+    .aria-switch {
+      width: 50px;
+      height: 26px;
+      background: #ccc;
+      border-radius: 26px;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .aria-switch::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: left 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .aria-switch[aria-checked="true"] {
+      background: #667eea;
+    }
+
+    .aria-switch[aria-checked="true"]::after {
+      left: 26px;
+    }
+
+    .info-box {
+      background: #d1ecf1;
+      border: 1px solid #bee5eb;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      color: #0c5460;
+    }
+
+    .info-box strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    small {
+      font-size: 11px;
+      font-style: italic;
+    }
+
+    /* Sample Prompts Styles */
+    .sample-prompts {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 10px 12px;
+      margin-top: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .sample-prompts strong {
+      color: #856404;
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .sample-prompts ul {
+      margin: 5px 0 0 20px;
+      padding: 0;
+    }
+
+    .sample-prompts li {
+      margin: 3px 0;
+      color: #666;
+    }
+
+    /* Chat FAB Button */
+    .chat-fab {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      cursor: pointer;
+      font-size: 28px;
+      display: flex;
+      align-items: center;
+      justify-center;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .chat-fab:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .chat-fab:active {
+      transform: scale(0.95);
+    }
+
+    /* Chat Popup Overlay */
+    .chat-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-center;
+      z-index: 1001;
+      animation: fadeIn 0.2s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Chat Popup */
+    .chat-popup {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .chat-popup-header {
+      padding: 20px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .chat-popup-header h3 {
+      margin: 0;
+      font-size: 1.3em;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .chat-popup-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      padding: 12px 16px;
+      border-radius: 12px;
+      max-width: 80%;
+      word-wrap: break-word;
+      animation: messageIn 0.2s ease-out;
+    }
+
+    @keyframes messageIn {
+      from {
+        transform: translateY(10px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .message-user {
+      background: #667eea;
+      color: white;
+      align-self: flex-end;
+      margin-left: auto;
+    }
+
+    .message-assistant {
+      background: #f0f0f0;
+      color: #333;
+      align-self: flex-start;
+    }
+
+    .message-error {
+      background: #ffebee;
+      color: #c62828;
+      align-self: flex-start;
+    }
+
+    .chat-popup-input {
+      padding: 20px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-popup-input input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 24px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .chat-popup-input input:focus {
+      border-color: #667eea;
+    }
+
+    .chat-popup-input button {
+      padding: 12px 24px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .chat-popup-input button:hover:not(:disabled) {
+      background: #5568d3;
+      transform: translateY(-1px);
+    }
+
+    .chat-popup-input button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #999;
+      padding: 40px 20px;
+    }
+
+    .empty-state p {
+      margin: 8px 0;
+    }
+
+    .loading {
+      opacity: 0.7;
+      font-style: italic;
+    }
+
+    .api-key-setup {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .api-key-setup h4 {
+      margin-bottom: 15px;
+      color: #667eea;
+    }
+
+    .api-key-input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cors-warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      color: #856404;
+      font-weight: 600;
+    }
+
+    .cors-info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 1024px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .chat-popup {
+        width: 95%;
+        max-height: 90vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="header">
+      <h1>🚀 UUICS Comprehensive Demo</h1>
+      <p>Universal UI Context System - All Features Demonstration</p>
+    </div>
+
+    <div class="controls-panel">
+      <h3>📊 UUICS Test Controls</h3>
+      
+      <div class="control-group">
+        <span class="control-label">Scan Scope:</span>
+        <select id="scope-select" class="inline">
+          <option value="all">Entire Page</option>
+          <option value="form">Form Only (#demo-form)</option>
+          <option value="special">Special Elements Only (#special-elements)</option>
+          <option value="custom">Custom Selectors...</option>
+        </select>
+      </div>
+
+      <div id="custom-selector-group" style="display: none;">
+        <div class="control-group">
+          <span class="control-label">Include (Root):</span>
+          <input type="text" id="root-selector" placeholder="e.g., #my-form, .content-area" style="width: 300px;">
+          <small style="display: block; margin-top: 4px; color: #856404;">Comma-separated selectors to scan (e.g., "#form1, .section2")</small>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Exclude:</span>
+          <input type="text" id="exclude-selector" placeholder="e.g., .ads, #footer, nav" style="width: 300px;">
+          <button type="button" class="secondary" onclick="document.getElementById('exclude-selector').value = '.controls-panel, #output-panel'">Example: Exclude Controls & Output</button>
+          <small style="display: block; margin-top: 4px; color: #856404;">Comma-separated selectors to skip (e.g., ".ads, #nav, footer")</small>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="control-label">Output Format:</span>
+        <select id="format-select" class="inline">
+          <option value="nl">Natural Language (AI-friendly)</option>
+          <option value="json">JSON (Complete Context)</option>
+          <option value="openapi">OpenAPI (Tool Definitions)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <button id="scan-btn" class="success">🔍 Scan Now</button>
+        <button id="clear-btn" class="danger">🧹 Clear Output</button>
+      </div>
+
+      <div class="info-box">
+        <strong>ℹ️ What does this demonstrate?</strong>
+        <strong>Natural Language:</strong> AI-readable description of all UI elements<br>
+        <strong>JSON:</strong> Complete structured context with all metadata<br>
+        <strong>OpenAPI:</strong> Tool/function definitions for AI model function calling<br><br>
+        <strong>Scope Control:</strong><br>
+        • <strong>Include (Root):</strong> Scan only within specific elements (supports multiple selectors)<br>
+        • <strong>Exclude:</strong> Skip specific elements from scanning (applies to all scan modes)
+      </div>
+    </div>
+
+    <div class="grid-container">
+      <!-- Standard Form Elements -->
+      <div class="panel">
+        <h2>📝 Standard Form Elements</h2>
+        
+        <form id="demo-form">
+          <div class="section">
+            <h3>Text Inputs</h3>
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" id="name" name="name" placeholder="Enter your name">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" id="email" name="email" placeholder="your@email.com">
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" placeholder="••••••">
+            </div>
+
+            <div class="form-group">
+              <label for="age">Age:</label>
+              <input type="number" id="age" name="age" min="0" max="120" value="25">
+            </div>
+
+            <div class="sample-prompts">
+              <strong>💬 Try asking:</strong>
+              <ul>
+                <li>"Fill in the name field with John Doe"</li>
+                <li>"Set the email to john@example.com"</li>
+                <li>"Change the age to 30"</li>
+                <li>"Fill out all the text fields"</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>Dropdowns & Multi-Select</h3>
+            <div class="form-group">
+              <label for="country">Country (Single Select):</label>
+              <select id="country" name="country">
+                <option value="">Select country...</option>
+                <option value="us">United States</option>
+                <option value="uk">United Kingdom</option>
+                <option value="ca">Canada</option>
+                <option value="au">Australia</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="skills">Skills (Multi-Select):</label>
+              <select id="skills" name="skills" multiple size="4">
+                <option value="js">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="rust">Rust</option>
+                <option value="go">Go</option>
+              </select>
+            </div>
+
+            <div class="sample-prompts">
+              <strong>💬 Try asking:</strong>
+              <ul>
+                <li>"Select United States as the country"</li>
+                <li>"What countries are available?"</li>
+                <li>"Select JavaScript and Python from skills"</li>
+                <li>"Show me all the skill options"</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>Checkboxes & Radio Buttons</h3>
+            <div class="form-group">
+              <label>Interests:</label>
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" id="interest-coding" name="interests" value="coding">
+                  <label for="interest-coding">Coding</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="interest-design" name="interests" value="design">
+                  <label for="interest-design">Design</label>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" id="interest-music" name="interests" value="music">
+                  <label for="interest-music">Music</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Experience Level:</label>
+              <div class="radio-group">
+                <div class="radio-item">
+                  <input type="radio" id="exp-beginner" name="experience" value="beginner">
+                  <label for="exp-beginner">Beginner</label>
+                </div>
+                <div class="radio-item">
+                  <input type="radio" id="exp-intermediate" name="experience" value="intermediate" checked>
+                  <label for="exp-intermediate">Intermediate</label>
+                </div>
+                <div class="radio-item">
+                  <input type="radio" id="exp-expert" name="experience" value="expert">
+                  <label for="exp-expert">Expert</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="sample-prompts">
+              <strong>💬 Try asking:</strong>
+              <ul>
+                <li>"Check the coding and design interests"</li>
+                <li>"Select expert as the experience level"</li>
+                <li>"Uncheck all interests"</li>
+                <li>"What experience level is currently selected?"</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3>Text Area</h3>
+            <div class="form-group">
+              <label for="bio">Bio:</label>
+              <textarea id="bio" name="bio" placeholder="Tell us about yourself..."></textarea>
+            </div>
+
+            <div class="sample-prompts">
+              <strong>💬 Try asking:</strong>
+              <ul>
+                <li>"Write a bio about being a software developer"</li>
+                <li>"Fill the bio with some example text"</li>
+                <li>"Clear the bio field"</li>
+              </ul>
+            </div>
+          </div>
+
+          <button type="submit">Submit Form</button>
+          <button type="reset" class="secondary">Reset</button>
+        </form>
+      </div>
+
+      <!-- Special Elements & ARIA Roles -->
+      <div class="panel" id="special-elements">
+        <h2>✨ Special Elements & ARIA Roles</h2>
+
+        <div class="section">
+          <h3>ContentEditable (Divs as Inputs)</h3>
+          <div class="form-group">
+            <label>Simple Editor:</label>
+            <div id="editor-simple" contenteditable="true" data-placeholder="Type here...">Type here to edit!</div>
+          </div>
+
+          <div class="form-group">
+            <label>Rich Text Editor:</label>
+            <div id="editor-rich" contenteditable="true">
+              <strong>Bold</strong>, <em>italic</em>, and normal text.
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>ARIA Custom Controls</h3>
+          <div class="form-group">
+            <label>ARIA Button (Div):</label>
+            <div id="aria-button" class="custom-button" role="button" tabindex="0">
+              Click Me (Custom Button)
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>ARIA Textbox:</label>
+            <div id="aria-textbox" role="textbox" contenteditable="true" aria-label="Custom input">
+              ARIA textbox role
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>ARIA Checkbox:</label>
+            <div class="checkbox-item">
+              <div id="aria-checkbox" class="aria-checkbox" role="checkbox" aria-checked="false" tabindex="0"></div>
+              <label>Custom Checkbox (ARIA)</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>ARIA Switch:</label>
+            <div class="checkbox-item">
+              <div id="aria-switch" class="aria-switch" role="switch" aria-checked="true" tabindex="0"></div>
+              <label>Toggle Switch (ARIA)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Progress & Meter</h3>
+          <div class="form-group">
+            <label>Loading Progress:</label>
+            <progress id="progress-bar" value="65" max="100">65%</progress>
+            <small style="display: block; margin-top: 5px; color: #666;">65% complete</small>
+          </div>
+
+          <div class="form-group">
+            <label>Disk Usage (Meter):</label>
+            <meter id="meter-gauge" value="0.7" min="0" max="1" low="0.3" high="0.8" optimum="0.9"></meter>
+            <small style="display: block; margin-top: 5px; color: #666;">70% used</small>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Interactive Elements</h3>
+          <div class="form-group">
+            <details id="details-1" open>
+              <summary>Click to expand/collapse</summary>
+              <p style="padding: 10px; color: #666;">This is hidden content that can be toggled using the details/summary elements.</p>
+            </details>
+          </div>
+
+          <div class="form-group">
+            <button id="open-dialog-btn">Open Dialog</button>
+            <dialog id="test-dialog">
+              <h3>Example Dialog</h3>
+              <p>This is a native HTML dialog element!</p>
+              <button id="close-dialog-btn" class="success">Close</button>
+            </dialog>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Output Element (Calculation)</h3>
+          <form oninput="result.value = parseInt(a.value || 0) + parseInt(b.value || 0)">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="number" id="a" value="5" style="width: 80px;"> +
+              <input type="number" id="b" value="10" style="width: 80px;"> =
+              <output name="result" id="output-result" for="a b">15</output>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Grouped Form (Fieldset) -->
+      <div class="panel">
+        <h2>🗂️ Form Grouping (Fieldset)</h2>
+
+        <fieldset id="user-fieldset">
+          <legend>User Information</legend>
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label for="user-email">Email:</label>
+            <input type="email" id="user-email" name="user-email" placeholder="Enter email">
+          </div>
+        </fieldset>
+
+        <fieldset id="address-fieldset">
+          <legend>Address Information</legend>
+          <div class="form-group">
+            <label for="street">Street:</label>
+            <input type="text" id="street" name="street" placeholder="Street address">
+          </div>
+          <div class="form-group">
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" placeholder="City">
+          </div>
+          <div class="form-group">
+            <label for="zipcode">Zip Code:</label>
+            <input type="text" id="zipcode" name="zipcode" placeholder="12345">
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- Datalist (Autocomplete) -->
+      <div class="panel">
+        <h2>📋 Datalist (Autocomplete)</h2>
+        
+        <div class="form-group">
+          <label for="browser-input">Choose Browser:</label>
+          <input type="text" id="browser-input" list="browsers" placeholder="Type to search...">
+          <datalist id="browsers">
+            <option value="Chrome">
+            <option value="Firefox">
+            <option value="Safari">
+            <option value="Edge">
+            <option value="Opera">
+            <option value="Brave">
+          </datalist>
+        </div>
+
+        <div class="form-group">
+          <label for="language-input">Programming Language:</label>
+          <input type="text" id="language-input" list="languages" placeholder="Type to search...">
+          <datalist id="languages">
+            <option value="JavaScript">
+            <option value="Python">
+            <option value="Java">
+            <option value="TypeScript">
+            <option value="C++">
+            <option value="Rust">
+          </datalist>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Scanning Features -->
+    <div class="grid-container">
+      <div class="panel full-width">
+        <h2>🔍 Advanced Scanning & Filtering</h2>
+        
+        <div class="info-box">
+          <strong>ℹ️ About Filtering</strong><br>
+          UUICS supports powerful filtering options to control which elements are scanned and included in the context. This helps reduce noise and focus on relevant UI elements.
+        </div>
+
+        <div class="section">
+          <h3>Element Type Filtering</h3>
+          <p style="margin-bottom: 10px; color: #666;">Include or exclude specific HTML element types.</p>
+          
+          <div class="form-group">
+            <label for="filter-demo-name">Name:</label>
+            <input type="text" id="filter-demo-name" data-category="user-input" placeholder="John Doe">
+          </div>
+          
+          <div class="form-group">
+            <label for="filter-demo-role">Role:</label>
+            <select id="filter-demo-role" data-category="user-input">
+              <option value="">Select...</option>
+              <option value="developer">Developer</option>
+              <option value="designer">Designer</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <button type="button" id="filter-demo-submit" class="primary" data-category="action">Submit</button>
+            <button type="button" id="filter-demo-cancel" class="secondary" data-category="action">Cancel</button>
+          </div>
+
+          <div style="margin-top: 15px; padding: 12px; background: #f0f0f0; border-radius: 6px;">
+            <strong style="color: #667eea;">Configuration Examples:</strong>
+            <pre style="margin-top: 8px; padding: 10px; background: #fff; border-radius: 4px; font-size: 12px; overflow-x: auto;">
+// Include only inputs and buttons
+{ scan: { includeElements: ['input', 'button'] } }
+
+// Exclude script and style tags
+{ scan: { excludeElements: ['script', 'style'] } }
+
+// Include multiple types
+{ scan: { includeElements: 'input,select,textarea,button' } }</pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Regex Pattern Filtering</h3>
+          <p style="margin-bottom: 10px; color: #666;">Use regex patterns to match against selectors, IDs, and classes.</p>
+          
+          <div class="form-group">
+            <label for="admin-username">Admin Username:</label>
+            <input type="text" id="admin-username" class="admin-field" placeholder="admin">
+          </div>
+          
+          <div class="form-group">
+            <label for="admin-password">Admin Password:</label>
+            <input type="password" id="admin-password" class="admin-field" placeholder="••••••••">
+          </div>
+          
+          <div class="form-group">
+            <label for="user-email">User Email:</label>
+            <input type="email" id="user-email" class="user-field" placeholder="user@example.com">
+          </div>
+
+          <div style="margin-top: 15px; padding: 12px; background: #f0f0f0; border-radius: 6px;">
+            <strong style="color: #667eea;">Configuration Examples:</strong>
+            <pre style="margin-top: 8px; padding: 10px; background: #fff; border-radius: 4px; font-size: 12px; overflow-x: auto;">
+// Include only admin fields (matches .admin-field or #admin-*)
+{ scan: { includePatterns: /admin/i } }
+
+// Exclude fields with 'temp' or 'test' in their ID/class
+{ scan: { excludePatterns: [/temp/i, /test/i] } }
+
+// Match data attributes
+{ scan: { includePatterns: /data-category="action"/ } }</pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>CSS Selector Filtering</h3>
+          <p style="margin-bottom: 10px; color: #666;">Use CSS selectors for precise element targeting.</p>
+          
+          <div id="critical-form" style="padding: 15px; background: #fff3cd; border-radius: 6px; margin-bottom: 10px;">
+            <h4 style="margin-bottom: 10px; color: #856404;">Critical Section</h4>
+            <div class="form-group">
+              <label for="critical-field">Important Field:</label>
+              <input type="text" id="critical-field" placeholder="Critical data">
+            </div>
+          </div>
+          
+          <div class="non-critical" style="padding: 15px; background: #e7f3ff; border-radius: 6px;">
+            <h4 style="margin-bottom: 10px; color: #004085;">Optional Section</h4>
+            <div class="form-group">
+              <label for="optional-field">Optional Field:</label>
+              <input type="text" id="optional-field" placeholder="Optional data">
+            </div>
+          </div>
+
+          <div style="margin-top: 15px; padding: 12px; background: #f0f0f0; border-radius: 6px;">
+            <strong style="color: #667eea;">Configuration Examples:</strong>
+            <pre style="margin-top: 8px; padding: 10px; background: #fff; border-radius: 4px; font-size: 12px; overflow-x: auto;">
+// Only scan within #critical-form
+{ scan: { rootSelectors: '#critical-form' } }
+
+// Exclude .non-critical sections
+{ scan: { excludeSelectors: '.non-critical' } }
+
+// Multiple root selectors
+{ scan: { rootSelectors: ['#form1', '#form2', '.modal'] } }</pre>
+          </div>
+        </div>
+
+        <div class="sample-prompts">
+          <strong>💬 Try asking:</strong>
+          <ul>
+            <li>"What fields are in the critical section?"</li>
+            <li>"List all admin fields"</li>
+            <li>"Show me the action buttons"</li>
+            <li>"Fill in the user email with test@example.com"</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- State Tracking Demo -->
+    <div class="grid-container">
+      <div class="panel full-width">
+        <h2>🔄 State Tracking Demo</h2>
+        
+        <div class="info-box">
+          <strong>ℹ️ What is State Tracking?</strong><br>
+          UUICS can track JavaScript variables and application state, making them available in the context sent to AI models. This allows AI to understand not just the UI structure, but also the current application state.
+        </div>
+
+        <div class="section">
+          <h3>Proxy-Based Tracking (Automatic)</h3>
+          <p style="margin-bottom: 10px; color: #666;">Objects tracked with proxies automatically capture their current values.</p>
+          
+          <div class="form-group">
+            <label for="user-name-state">User Name:</label>
+            <input type="text" id="user-name-state" placeholder="John Doe" value="John Doe">
+          </div>
+          
+          <div class="form-group">
+            <label for="user-role-state">User Role:</label>
+            <select id="user-role-state">
+              <option value="guest">Guest</option>
+              <option value="user" selected>User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          
+          <button type="button" id="update-user-btn" class="primary">Update User State</button>
+        </div>
+
+        <div class="section">
+          <h3>Manual Registration (Getters)</h3>
+          <p style="margin-bottom: 10px; color: #666;">State registered with getter functions is evaluated on-demand during scans.</p>
+          
+          <div class="form-group">
+            <label>Click Counter:</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <button type="button" id="counter-btn" class="secondary">Click Me!</button>
+              <output id="counter-display">0</output>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Timer (seconds):</label>
+            <output id="timer-display">0</output>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Sensitive Data Exclusion</h3>
+          <p style="margin-bottom: 10px; color: #666;">Sensitive fields are excluded from state snapshots using patterns.</p>
+          
+          <div class="form-group">
+            <label for="api-key-input">API Key (will be excluded):</label>
+            <input type="password" id="api-key-input" value="sk-1234567890abcdef">
+          </div>
+          
+          <div class="form-group">
+            <label for="public-data-input">Public Data (will be included):</label>
+            <input type="text" id="public-data-input" value="Some public information">
+          </div>
+          
+          <button type="button" id="update-credentials-btn" class="primary">Update Credentials State</button>
+        </div>
+
+        <div class="section">
+          <h3>Current Tracked State</h3>
+          <div style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 12px; max-height: 300px; overflow-y: auto;">
+            <pre id="state-display">No state tracked yet...</pre>
+          </div>
+          <button type="button" id="refresh-state-btn" class="secondary" style="margin-top: 10px;">🔄 Refresh State Display</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Panel (Full Width) -->
+    <div class="panel full-width">
+      <h2>📤 Context Output - For AI Models</h2>
+      <div class="stats" id="stats">Click "Scan Now" to generate context...</div>
+      <div id="output-panel">No scan performed yet. Click the "Scan Now" button above.</div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Import UUICS from the built package
+    import { UUICSEngine } from '../../packages/core/dist/index.mjs';
+
+    // Initialize UUICS Engine with State Tracking Enabled
+    const uuics = new UUICSEngine({
+      scan: {
+        depth: 15,
+        includeHidden: false,
+      },
+      performance: {
+        useIdleCallback: false,
+      },
+      debug: {
+        enabled: true,
+        level: 'info',
+      },
+      state: {
+        enabled: true,
+        exclude: ['*password*', '*key*', '*token*', '*secret*'],
+      },
+    });
+
+    // ============================================================================
+    // STATE TRACKING SETUP
+    // ============================================================================
+
+    // 1. Proxy-Based Tracking
+    const userState = uuics.trackState('user', {
+      name: 'John Doe',
+      role: 'user',
+      isActive: true,
+    });
+
+    const credentialsState = uuics.trackState('credentials', {
+      apiKey: 'sk-1234567890abcdef',
+      publicData: 'Some public information',
+    });
+
+    // 2. Manual Registration with Getters
+    let clickCount = 0;
+    let timerSeconds = 0;
+
+    uuics.registerState('counters', () => ({
+      clicks: clickCount,
+      timer: timerSeconds,
+    }));
+
+    uuics.registerState('appInfo', () => ({
+      version: '1.0.0',
+      environment: 'demo',
+      timestamp: new Date().toISOString(),
+    }));
+
+    // Start timer
+    setInterval(() => {
+      timerSeconds++;
+      document.getElementById('timer-display').textContent = timerSeconds;
+    }, 1000);
+
+    // ============================================================================
+    // STATE INTERACTION HANDLERS
+    // ============================================================================
+
+    document.getElementById('update-user-btn').addEventListener('click', () => {
+      const nameInput = document.getElementById('user-name-state');
+      const roleSelect = document.getElementById('user-role-state');
+      
+      userState.name = nameInput.value;
+      userState.role = roleSelect.value;
+      
+      refreshStateDisplay();
+      alert('User state updated!');
+    });
+
+    document.getElementById('counter-btn').addEventListener('click', () => {
+      clickCount++;
+      document.getElementById('counter-display').textContent = clickCount;
+      refreshStateDisplay();
+    });
+
+    document.getElementById('update-credentials-btn').addEventListener('click', () => {
+      const apiKeyInput = document.getElementById('api-key-input');
+      const publicDataInput = document.getElementById('public-data-input');
+      
+      credentialsState.apiKey = apiKeyInput.value;
+      credentialsState.publicData = publicDataInput.value;
+      
+      refreshStateDisplay();
+      alert('Credentials state updated!');
+    });
+
+    document.getElementById('refresh-state-btn').addEventListener('click', () => {
+      refreshStateDisplay();
+    });
+
+    function refreshStateDisplay() {
+      // Manually capture current state (this is also done automatically during scan)
+      const stateSnapshot = {
+        user: { ...userState },
+        credentials: { ...credentialsState },
+        counters: {
+          clicks: clickCount,
+          timer: timerSeconds,
+        },
+        appInfo: {
+          version: '1.0.0',
+          environment: 'demo',
+          timestamp: new Date().toISOString(),
+        },
+      };
+      
+      document.getElementById('state-display').textContent = JSON.stringify(stateSnapshot, null, 2);
+    }
+
+    // Initial state display
+    refreshStateDisplay();
+
+    // ============================================================================
+    // DOM ELEMENTS
+    // ============================================================================
+    const scopeSelect = document.getElementById('scope-select');
+    const customSelectorGroup = document.getElementById('custom-selector-group');
+    const rootSelectorInput = document.getElementById('root-selector');
+    const excludeSelectorInput = document.getElementById('exclude-selector');
+    const formatSelect = document.getElementById('format-select');
+    const scanBtn = document.getElementById('scan-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const outputPanel = document.getElementById('output-panel');
+    const statsDiv = document.getElementById('stats');
+
+    // Initialize UUICS
+    await uuics.initialize();
+    console.log('✅ UUICS initialized (Manual Mode)');
+
+    // Scope selector change handler
+    scopeSelect.addEventListener('change', () => {
+      if (scopeSelect.value === 'custom') {
+        customSelectorGroup.style.display = 'block';
+      } else {
+        customSelectorGroup.style.display = 'none';
+      }
+    });
+
+    // Scan button handler
+    scanBtn.addEventListener('click', async () => {
+      try {
+        scanBtn.disabled = true;
+        scanBtn.textContent = '⏳ Scanning...';
+        
+        // Determine scan configuration based on scope
+        let scanConfig = {};
+        
+        // Get exclusion selectors (apply to all scan modes)
+        const excludeInput = excludeSelectorInput.value.trim();
+        if (excludeInput) {
+          // Pass raw string - core will parse it
+          scanConfig.excludeSelectors = excludeInput;
+        }
+        
+        switch (scopeSelect.value) {
+          case 'form':
+            scanConfig.rootSelectors = '#demo-form';
+            break;
+          case 'special':
+            scanConfig.rootSelectors = '#special-elements';
+            break;
+          case 'custom':
+            const rootInput = rootSelectorInput.value.trim();
+            if (rootInput) {
+              // Pass raw string - core will parse it
+              scanConfig.rootSelectors = rootInput;
+            }
+            break;
+          default:
+            // Scan entire page (but still apply exclusions if any)
+            break;
+        }
+        
+        // Perform scan
+        const context = await uuics.scan(undefined, scanConfig);
+        
+        // Update stats
+        statsDiv.innerHTML = `
+          <strong>Scan Complete!</strong><br>
+          Elements: ${context.elements.length} | 
+          Actions: ${context.actions.length} | 
+          Forms: ${context.forms?.length || 0} | 
+          Scan Time: ${context.metadata.scanDuration.toFixed(2)}ms | 
+          Depth: ${context.metadata.scanDepth}
+        `;
+        
+        // Serialize and display based on format
+        const format = formatSelect.value;
+        let output;
+        
+        if (format === 'json') {
+          output = JSON.stringify(context, null, 2);
+        } else if (format === 'nl') {
+          output = uuics.serialize('natural');
+        } else {
+          output = JSON.stringify(uuics.serialize('openapi'), null, 2);
+        }
+        
+        outputPanel.textContent = output;
+        outputPanel.scrollTop = 0;
+        
+        scanBtn.disabled = false;
+        scanBtn.textContent = '🔍 Scan Now';
+        
+      } catch (error) {
+        console.error('Scan error:', error);
+        outputPanel.textContent = `Error during scan: ${error.message}`;
+        statsDiv.innerHTML = '<strong style="color: #dc3545;">Scan failed!</strong>';
+        scanBtn.disabled = false;
+        scanBtn.textContent = '🔍 Scan Now';
+      }
+    });
+
+    // Clear button handler
+    clearBtn.addEventListener('click', () => {
+      outputPanel.textContent = 'Output cleared. Click "Scan Now" to generate new context.';
+      statsDiv.textContent = 'Click "Scan Now" to generate context...';
+    });
+
+    // Form submit handler
+    document.getElementById('demo-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Form submitted! (Prevented default action for demo)');
+    });
+
+    // ARIA checkbox handler
+    document.getElementById('aria-checkbox').addEventListener('click', (e) => {
+      const checked = e.target.getAttribute('aria-checked') === 'true';
+      e.target.setAttribute('aria-checked', !checked);
+    });
+
+    // ARIA switch handler
+    document.getElementById('aria-switch').addEventListener('click', (e) => {
+      const checked = e.currentTarget.getAttribute('aria-checked') === 'true';
+      e.currentTarget.setAttribute('aria-checked', !checked);
+    });
+
+    // ARIA button handler
+    document.getElementById('aria-button').addEventListener('click', () => {
+      alert('ARIA button clicked!');
+    });
+
+    // Dialog handlers
+    document.getElementById('open-dialog-btn').addEventListener('click', () => {
+      document.getElementById('test-dialog').showModal();
+    });
+
+    document.getElementById('close-dialog-btn').addEventListener('click', () => {
+      document.getElementById('test-dialog').close();
+    });
+
+    // Make uuics available globally for testing
+    window.uuics = uuics;
+    console.log('💡 Tip: window.uuics is available in the console!');
+    console.log('   Example: await uuics.execute({ action: "setValue", target: "#name", parameters: { value: "John" } })');
+
+    // Chat functionality
+    import { ClaudeAdapter } from '@uuics/models-claude';
+
+    const chatState = {
+      isOpen: false,
+      isApiKeySet: false,
+      messages: [],
+      isLoading: false
+    };
+
+    const chatFab = document.getElementById('chat-fab');
+    const chatOverlay = document.getElementById('chat-overlay');
+    const closeChat = document.getElementById('close-chat');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const chatSendBtn = document.getElementById('chat-send-btn');
+    const startChatBtn = document.getElementById('start-chat-btn');
+    const apiKeySetup = document.getElementById('api-key-setup');
+    const chatInterface = document.getElementById('chat-interface');
+
+    function toggleChat() {
+      chatState.isOpen = !chatState.isOpen;
+      if (chatState.isOpen) {
+        chatOverlay.style.display = 'flex';
+      } else {
+        chatOverlay.style.display = 'none';
+      }
+    }
+
+    function addMessage(role, content) {
+      chatState.messages.push({ role, content });
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message message-${role}`;
+      messageDiv.textContent = content;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function handleSendMessage() {
+      const message = chatInput.value.trim();
+      if (!message || chatState.isLoading) return;
+
+      addMessage('user', message);
+      chatInput.value = '';
+      chatState.isLoading = true;
+      chatSendBtn.disabled = true;
+      chatInput.disabled = true;
+
+      // Add loading message
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'message message-assistant loading';
+      loadingDiv.textContent = 'Thinking...';
+      chatMessages.appendChild(loadingDiv);
+
+      try {
+        const adapter = new ClaudeAdapter({
+          apiKey: 'proxy-handles-key',
+          proxyUrl: 'http://localhost:3100'
+        });
+
+        const contextString = uuics.serialize('natural');
+        const response = await adapter.chat(message, uuics.currentContext, contextString);
+
+        // Remove loading message
+        chatMessages.removeChild(loadingDiv);
+
+        addMessage('assistant', response);
+
+        // Execute actions
+        const actions = adapter.parseResponse(response);
+        if (actions.length > 0) {
+          for (const action of actions) {
+            try {
+              await uuics.execute(action);
+            } catch (execError) {
+              console.error('Failed to execute action:', action, execError);
+            }
+          }
+
+        }
+      } catch (err) {
+        chatMessages.removeChild(loadingDiv);
+        let errorMessage = err instanceof Error ? err.message : 'An error occurred';
+        
+        if (errorMessage.includes('Failed to fetch') || errorMessage.includes('CORS')) {
+          errorMessage = '🚫 Cannot connect to proxy server. Make sure the proxy server is running on http://localhost:3100';
+        }
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'message message-error';
+        errorDiv.textContent = `Error: ${errorMessage}`;
+        chatMessages.appendChild(errorDiv);
+        console.error('Chat error:', err);
+      } finally {
+        chatState.isLoading = false;
+        chatSendBtn.disabled = false;
+        chatInput.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    chatFab.addEventListener('click', toggleChat);
+    closeChat.addEventListener('click', toggleChat);
+    chatOverlay.addEventListener('click', (e) => {
+      if (e.target === chatOverlay) toggleChat();
+    });
+
+    startChatBtn.addEventListener('click', () => {
+      chatState.isApiKeySet = true;
+      apiKeySetup.style.display = 'none';
+      chatInterface.style.display = 'flex';
+      addMessage('assistant', '👋 Hi! I can help you interact with this page. Try asking me to fill out the form or click buttons!');
+    });
+
+    chatSendBtn.addEventListener('click', handleSendMessage);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    });
+  </script>
+
+  <!-- Chat FAB Button -->
+  <button id="chat-fab" class="chat-fab">🤖</button>
+
+  <!-- Chat Popup -->
+  <div id="chat-overlay" class="chat-popup-overlay" style="display: none;">
+    <div class="chat-popup" onclick="event.stopPropagation()">
+      <div class="chat-popup-header">
+        <h3>🤖 Claude AI Chat</h3>
+        <button id="close-chat" class="close-btn">×</button>
+      </div>
+
+      <div id="api-key-setup" class="api-key-setup">
+        <div class="cors-warning">⚙️ Proxy Server Setup Required</div>
+        <p class="cors-info">To chat with Claude, you need to run the proxy server to avoid CORS issues.</p>
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+          Copy the <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px;">proxy-server.cjs</code> from the react-app example, set your API key, and run it:
+        </p>
+        <pre style="background: #1e1e1e; color: #d4d4d4; padding: 12px; border-radius: 6px; font-size: 12px; margin-bottom: 15px;">cd examples/react-app
+export CLAUDE_API_KEY="your-key-here"
+node proxy-server.cjs</pre>
+        <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Once the proxy server is running, click below to start chatting:</p>
+        <div class="api-key-input-group">
+          <button id="start-chat-btn" style="padding: 12px 32px; background: #667eea; color: white; border: none; border-radius: 24px; cursor: pointer; font-weight: 600;">
+            Start Chatting
+          </button>
+        </div>
+      </div>
+
+      <div id="chat-interface" style="display: none; flex: 1; flex-direction: column; overflow: hidden;">
+        <div id="chat-messages" class="chat-popup-messages"></div>
+        <div class="chat-popup-input">
+          <input type="text" id="chat-input" placeholder="Type a message..." />
+          <button id="chat-send-btn">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
