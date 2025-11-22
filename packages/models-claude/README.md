@@ -1,4 +1,4 @@
-# @uuics/models-claude
+# @angelerator/models-claude
 
 Example Claude AI adapter for Universal UI Context System (UUICS).
 
@@ -9,14 +9,14 @@ This is a **reference implementation** showing how to integrate UUICS with Claud
 ## Installation
 
 ```bash
-npm install @uuics/core @uuics/models-claude
+npm install @angelerator/core @angelerator/models-claude
 ```
 
 ## Usage
 
 ```typescript
-import { UUICSEngine } from '@uuics/core';
-import { ClaudeAdapter } from '@uuics/models-claude';
+import { UUICSEngine } from '@angelerator/core';
+import { ClaudeAdapter } from '@angelerator/models-claude';
 
 // Create UUICS engine
 const uuics = new UUICSEngine();
@@ -91,7 +91,7 @@ This adapter is meant to be customized for your use case. Some ideas:
 ## Example: Custom Adapter
 
 ```typescript
-import { ClaudeAdapter } from '@uuics/models-claude';
+import { ClaudeAdapter } from '@angelerator/models-claude';
 
 class MyClaudeAdapter extends ClaudeAdapter {
   formatContext(context: PageContext, naturalLanguage: string): string {
@@ -258,7 +258,7 @@ const contextString = uuics.serialize('json'); // Compact
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { ClaudeAdapter } from '@uuics/models-claude';
+import { ClaudeAdapter } from '@angelerator/models-claude';
 
 describe('ClaudeAdapter', () => {
   it('formats context correctly', () => {
@@ -403,11 +403,11 @@ class StreamingClaudeAdapter extends ClaudeAdapter {
 
 ```typescript
 // Before (OpenAI)
-import { OpenAIAdapter } from '@uuics/models-openai';
+import { OpenAIAdapter } from '@angelerator/models-openai';
 const adapter = new OpenAIAdapter({ apiKey: 'sk-...' });
 
 // After (Claude)
-import { ClaudeAdapter } from '@uuics/models-claude';
+import { ClaudeAdapter } from '@angelerator/models-claude';
 const adapter = new ClaudeAdapter({ apiKey: 'sk-ant-...' });
 
 // API is identical

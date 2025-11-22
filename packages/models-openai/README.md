@@ -1,4 +1,4 @@
-# @uuics/models-openai
+# @angelerator/models-openai
 
 Example OpenAI GPT adapter for Universal UI Context System (UUICS).
 
@@ -9,14 +9,14 @@ This is a **reference implementation** showing how to integrate UUICS with OpenA
 ## Installation
 
 ```bash
-npm install @uuics/core @uuics/models-openai
+npm install @angelerator/core @angelerator/models-openai
 ```
 
 ## Usage
 
 ```typescript
-import { UUICSEngine } from '@uuics/core';
-import { OpenAIAdapter } from '@uuics/models-openai';
+import { UUICSEngine } from '@angelerator/core';
+import { OpenAIAdapter } from '@angelerator/models-openai';
 
 // Create UUICS engine
 const uuics = new UUICSEngine();
@@ -125,7 +125,7 @@ Customize the adapter for your needs:
 ## Example: Custom Adapter
 
 ```typescript
-import { OpenAIAdapter } from '@uuics/models-openai';
+import { OpenAIAdapter } from '@angelerator/models-openai';
 
 class MyOpenAIAdapter extends OpenAIAdapter {
   formatTools(actions: Action[]): any[] {
@@ -290,7 +290,7 @@ const contextString = uuics.serialize('json'); // More token-efficient than 'nat
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { OpenAIAdapter } from '@uuics/models-openai';
+import { OpenAIAdapter } from '@angelerator/models-openai';
 
 describe('OpenAIAdapter', () => {
   it('formats tools correctly', () => {
@@ -365,11 +365,11 @@ const response = await fetch('/api/ai/chat', {
 
 ```typescript
 // Before (Claude)
-import { ClaudeAdapter } from '@uuics/models-claude';
+import { ClaudeAdapter } from '@angelerator/models-claude';
 const adapter = new ClaudeAdapter({ apiKey: 'sk-...' });
 
 // After (OpenAI)
-import { OpenAIAdapter } from '@uuics/models-openai';
+import { OpenAIAdapter } from '@angelerator/models-openai';
 const adapter = new OpenAIAdapter({ apiKey: 'sk-...' });
 
 // API is identical

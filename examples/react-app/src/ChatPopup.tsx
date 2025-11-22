@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useUUICSContext } from '@uuics/react';
-import { ClaudeAdapter } from '@uuics/models-claude';
+import { useUUICSContext } from '@angelerator/react';
+import { ClaudeAdapter } from '@angelerator/models-claude';
 
 interface ChatPopupProps {
   onClose: () => void;

@@ -1,5 +1,5 @@
 {
-  "name": "@uuics/models-claude",
+  "name": "@angelerator/models-claude",
   "version": "1.0.0",
   "description": "Universal UI Context System - Claude AI model adapter",
   "main": "./dist/index.js",
@@ -45,7 +45,7 @@
     "url": "https://github.com/Angelerator/uuics/issues"
   },
   "dependencies": {
-    "@uuics/core": "^1.0.0"
+    "@angelerator/core": "^1.0.0"
   },
   "devDependencies": {
     "tsup": "^8.0.1",
