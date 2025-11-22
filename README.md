@@ -47,28 +47,28 @@ A performance-optimized, framework-agnostic system for AI agents to understand a
 
 ### Core Packages
 
-- **@angelerator/core**: Core runtime engine (DOM scanning, tracking, serialization, execution)
-- **@angelerator/react**: React hooks and components
+- **@uuics/core**: Core runtime engine (DOM scanning, tracking, serialization, execution)
+- **@uuics/react**: React hooks and components
 
 ### Model Adapters (Examples)
 
-- **@angelerator/models-claude**: Claude AI integration example
-- **@angelerator/models-openai**: OpenAI GPT integration example
+- **@uuics/models-claude**: Claude AI integration example
+- **@uuics/models-openai**: OpenAI GPT integration example
 
 ## Installation
 
 ```bash
 # Using pnpm
-pnpm install @angelerator/core
+pnpm install @uuics/core
 
 # With React
-pnpm install @angelerator/core @angelerator/react
+pnpm install @uuics/core @uuics/react
 
 # Using npm
-npm install @angelerator/core
+npm install @uuics/core
 
 # Using yarn
-yarn add @angelerator/core
+yarn add @uuics/core
 ```
 
 ## Quick Start
@@ -76,7 +76,7 @@ yarn add @angelerator/core
 ### Vanilla JavaScript
 
 ```javascript
-import { UUICSEngine } from "@angelerator/core";
+import { UUICSEngine } from "@uuics/core";
 
 // Create engine with state tracking
 const uuics = new UUICSEngine({
@@ -131,7 +131,7 @@ await uuics.executeBatch([
 ### React
 
 ```tsx
-import { UUICSProvider, useUICS, DebugPanel } from "@angelerator/react";
+import { UUICSProvider, useUICS, DebugPanel } from "@uuics/react";
 
 function App() {
   return (

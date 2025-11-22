@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useUUICSContext } from '@angelerator/react';
+import { useUUICSContext } from '@uuics/react';
 import Card from './Card';
 import Prompts from './Prompts';
 

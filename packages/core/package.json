@@ -1,5 +1,5 @@
 {
-  "name": "@angelerator/core",
+  "name": "@uuics/core",
   "version": "1.0.0",
   "description": "Universal UI Context System - AI-powered web interface understanding and interaction",
   "main": "./dist/index.js",

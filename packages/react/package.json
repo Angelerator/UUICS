@@ -1,5 +1,5 @@
 {
-  "name": "@angelerator/react",
+  "name": "@uuics/react",
   "version": "1.0.0",
   "description": "Universal UI Context System - React hooks and components",
   "main": "./dist/index.js",
@@ -50,7 +50,7 @@
     "react": ">=18.0.0"
   },
   "dependencies": {
-    "@angelerator/core": "^1.0.0"
+    "@uuics/core": "^1.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",
