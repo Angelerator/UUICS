@@ -610,6 +610,6 @@ MIT - see [LICENSE](../../LICENSE) file for details.
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/uuics/issues)
+- Issues: [GitHub Issues](https://github.com/Angelerator/uuics/issues)
 - Examples: [examples/react-app/](../../examples/react-app/)
 - Main Docs: [README](../../README.md)

@@ -38,12 +38,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/uuics.git",
+    "url": "https://github.com/Angelerator/uuics.git",
     "directory": "packages/models-openai"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/uuics#readme",
+  "homepage": "https://github.com/Angelerator/uuics#readme",
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/uuics/issues"
+    "url": "https://github.com/Angelerator/uuics/issues"
   },
   "dependencies": {
     "@uuics/core": "^1.0.0"

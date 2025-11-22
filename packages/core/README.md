@@ -368,6 +368,6 @@ MIT - see [LICENSE](../../LICENSE) file for details.
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/uuics/issues)
+- Issues: [GitHub Issues](https://github.com/Angelerator/uuics/issues)
 - Docs: [Main README](../../README.md)
 - Examples: [examples/](../../examples/)

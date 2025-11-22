@@ -39,12 +39,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_USERNAME/uuics.git",
+    "url": "https://github.com/Angelerator/uuics.git",
     "directory": "packages/react"
   },
-  "homepage": "https://github.com/YOUR_USERNAME/uuics#readme",
+  "homepage": "https://github.com/Angelerator/uuics#readme",
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/uuics/issues"
+    "url": "https://github.com/Angelerator/uuics/issues"
   },
   "peerDependencies": {
     "react": ">=18.0.0"

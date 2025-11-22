@@ -437,6 +437,6 @@ MIT - see [LICENSE](../../LICENSE) file for details.
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/uuics/issues)
+- Issues: [GitHub Issues](https://github.com/Angelerator/uuics/issues)
 - Anthropic Support: https://support.anthropic.com/
 - Main Docs: [README](../../README.md)

@@ -696,8 +696,8 @@ Contributions are welcome! To contribute:
 
 For issues, questions, or feature requests:
 
-- **Issues**: Open an issue on [GitHub Issues](https://github.com/YOUR_USERNAME/uuics/issues)
-- **Discussions**: Use [GitHub Discussions](https://github.com/YOUR_USERNAME/uuics/discussions)
+- **Issues**: Open an issue on [GitHub Issues](https://github.com/Angelerator/uuics/issues)
+- **Discussions**: Use [GitHub Discussions](https://github.com/Angelerator/uuics/discussions)
 - **Security**: Report security issues via email to security@example.com
 
 ## Acknowledgments
