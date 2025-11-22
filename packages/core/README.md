@@ -1,4 +1,4 @@
-# @uuics/core
+# @angelerator/uuics-core
 
 Core runtime engine for Universal UI Context System (UUICS).
 
@@ -13,13 +13,13 @@ Core runtime engine for Universal UI Context System (UUICS).
 ## Installation
 
 ```bash
-npm install @uuics/core
+npm install @angelerator/uuics-core
 ```
 
 ## Basic Usage
 
 ```javascript
-import { UUICSEngine } from '@uuics/core';
+import { UUICSEngine } from '@angelerator/uuics-core';
 
 const uuics = new UUICSEngine({
   scan: { interval: 2000 },
@@ -222,7 +222,7 @@ import {
   ContextAggregator,
   Serializer,
   ActionExecutor,
-} from '@uuics/core';
+} from '@angelerator/uuics-core';
 
 // Use components independently
 const scanner = new DOMScanner(config);
@@ -325,7 +325,7 @@ import type {
   UIElement,
   ActionCommand,
   ActionResult
-} from '@uuics/core';
+} from '@angelerator/uuics-core';
 ```
 
 ## Troubleshooting

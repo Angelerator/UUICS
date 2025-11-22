@@ -1,4 +1,4 @@
-# @uuics/react
+# @angelerator/uuics-react
 
 React integration for Universal UI Context System (UUICS).
 
@@ -12,7 +12,7 @@ React integration for Universal UI Context System (UUICS).
 ## Installation
 
 ```bash
-npm install @uuics/core @uuics/react
+npm install @angelerator/uuics-core @angelerator/uuics-react
 ```
 
 ## Basic Usage
@@ -22,7 +22,7 @@ npm install @uuics/core @uuics/react
 Wrap your app with `UUICSProvider`:
 
 ```tsx
-import { UUICSProvider } from '@uuics/react';
+import { UUICSProvider } from '@angelerator/uuics-react';
 
 function App() {
   return (
@@ -45,7 +45,7 @@ function App() {
 Main hook for accessing UUICS functionality:
 
 ```tsx
-import { useUICS } from '@uuics/react';
+import { useUICS } from '@angelerator/uuics-react';
 
 function MyComponent() {
   const { context, execute, serialize, scan } = useUICS();
@@ -71,7 +71,7 @@ function MyComponent() {
 Hook to track a specific element:
 
 ```tsx
-import { useUIElement } from '@uuics/react';
+import { useUIElement } from '@angelerator/uuics-react';
 
 function ElementTracker() {
   const submitButton = useUIElement('#submit-btn');
@@ -96,7 +96,7 @@ function ElementTracker() {
 Hook to find elements by type:
 
 ```tsx
-import { useUIElements } from '@uuics/react';
+import { useUIElements } from '@angelerator/uuics-react';
 
 function ButtonList() {
   const buttons = useUIElements('button');
@@ -116,7 +116,7 @@ function ButtonList() {
 Visual component for debugging UUICS context:
 
 ```tsx
-import { DebugPanel } from '@uuics/react';
+import { DebugPanel } from '@angelerator/uuics-react';
 
 function App() {
   return (
@@ -198,8 +198,8 @@ Visual debug panel component.
 ### AI Integration Example
 
 ```tsx
-import { useUICS } from '@uuics/react';
-import { ClaudeAdapter } from '@uuics/models-claude';
+import { useUICS } from '@angelerator/uuics-react';
+import { ClaudeAdapter } from '@angelerator/uuics-models-claude';
 
 function AIAssistant() {
   const { context, execute, serialize } = useUICS();
@@ -238,7 +238,7 @@ function AIAssistant() {
 ### Form Auto-fill Example
 
 ```tsx
-import { useUICS } from '@uuics/react';
+import { useUICS } from '@angelerator/uuics-react';
 
 function AutoFillButton() {
   const { execute, context } = useUICS();
@@ -441,8 +441,8 @@ function App() {
 Full TypeScript support with type inference:
 
 ```tsx
-import type { PageContext, UIElement, ActionCommand } from '@uuics/core';
-import { useUICS } from '@uuics/react';
+import type { PageContext, UIElement, ActionCommand } from '@angelerator/uuics-core';
+import { useUICS } from '@angelerator/uuics-react';
 
 function TypedComponent() {
   const { context, execute } = useUICS();
@@ -473,7 +473,7 @@ import dynamic from 'next/dynamic';
 
 // Dynamic import with no SSR
 const UUICSProvider = dynamic(
-  () => import('@uuics/react').then(mod => mod.UUICSProvider),
+  () => import('@angelerator/uuics-react').then(mod => mod.UUICSProvider),
   { ssr: false }
 );
 
@@ -490,7 +490,7 @@ export default function App() {
 
 ```tsx
 import { render, screen, waitFor } from '@testing-library/react';
-import { UUICSProvider, useUICS } from '@uuics/react';
+import { UUICSProvider, useUICS } from '@angelerator/uuics-react';
 import { describe, it, expect } from 'vitest';
 
 function TestComponent() {
@@ -579,26 +579,26 @@ function OptimizedComponent() {
 ## Browser Compatibility
 
 - React 18+ (for useId, automatic batching)
-- Modern browsers (same as @uuics/core)
+- Modern browsers (same as @angelerator/uuics-core)
 - No IE11 support
 
 ## Migration from v0.x
 
 ```tsx
 // v0.x
-import { UUICSContext } from '@uuics/react';
+import { UUICSContext } from '@angelerator/uuics-react';
 const context = useContext(UUICSContext);
 
 // v1.x
-import { useUICS } from '@uuics/react';
+import { useUICS } from '@angelerator/uuics-react';
 const { context } = useUICS(); // More features, better DX
 ```
 
 ## Related Packages
 
-- [@uuics/core](../core/README.md) - Core engine
-- [@uuics/models-claude](../models-claude/README.md) - Claude adapter
-- [@uuics/models-openai](../models-openai/README.md) - OpenAI adapter
+- [@angelerator/uuics-core](../core/README.md) - Core engine
+- [@angelerator/uuics-models-claude](../models-claude/README.md) - Claude adapter
+- [@angelerator/uuics-models-openai](../models-openai/README.md) - OpenAI adapter
 
 ## Contributing
 
