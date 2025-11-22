@@ -13,8 +13,17 @@ Core runtime engine for Universal UI Context System (UUICS).
 ## Installation
 
 ```bash
+# npm
 npm install @angelerator/uuics-core
+
+# pnpm
+pnpm add @angelerator/uuics-core
+
+# yarn
+yarn add @angelerator/uuics-core
 ```
+
+**NPM Package**: [@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)
 
 ## Basic Usage
 

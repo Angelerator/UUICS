@@ -12,8 +12,19 @@ React integration for Universal UI Context System (UUICS).
 ## Installation
 
 ```bash
+# npm
 npm install @angelerator/uuics-core @angelerator/uuics-react
+
+# pnpm
+pnpm add @angelerator/uuics-core @angelerator/uuics-react
+
+# yarn
+yarn add @angelerator/uuics-core @angelerator/uuics-react
 ```
+
+**NPM Packages**: 
+- [@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)
+- [@angelerator/uuics-react](https://www.npmjs.com/package/@angelerator/uuics-react)
 
 ## Basic Usage
 

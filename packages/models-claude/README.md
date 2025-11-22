@@ -9,8 +9,19 @@ This is a **reference implementation** showing how to integrate UUICS with Claud
 ## Installation
 
 ```bash
+# npm
 npm install @angelerator/uuics-core @angelerator/uuics-models-claude
+
+# pnpm  
+pnpm add @angelerator/uuics-core @angelerator/uuics-models-claude
+
+# yarn
+yarn add @angelerator/uuics-core @angelerator/uuics-models-claude
 ```
+
+**NPM Packages**:
+- [@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)
+- [@angelerator/uuics-models-claude](https://www.npmjs.com/package/@angelerator/uuics-models-claude)
 
 ## Usage
 

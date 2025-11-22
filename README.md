@@ -1,5 +1,10 @@
 # UUICS (Universal UI Context System)
 
+[![npm version](https://img.shields.io/npm/v/@angelerator/uuics-core.svg)](https://www.npmjs.com/package/@angelerator/uuics-core)
+[![npm downloads](https://img.shields.io/npm/dm/@angelerator/uuics-core.svg)](https://www.npmjs.com/package/@angelerator/uuics-core)
+[![license](https://img.shields.io/npm/l/@angelerator/uuics-core.svg)](https://github.com/Angelerator/UUICS/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Angelerator/UUICS.svg?style=social)](https://github.com/Angelerator/UUICS)
+
 A performance-optimized, framework-agnostic system for AI agents to understand and interact with web interfaces.
 
 ## Features
@@ -47,28 +52,35 @@ A performance-optimized, framework-agnostic system for AI agents to understand a
 
 ### Core Packages
 
-- **@angelerator/uuics-core**: Core runtime engine (DOM scanning, tracking, serialization, execution)
-- **@angelerator/uuics-react**: React hooks and components
+- **[@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)**: Core runtime engine (DOM scanning, tracking, serialization, execution)
+- **[@angelerator/uuics-react](https://www.npmjs.com/package/@angelerator/uuics-react)**: React hooks and components
 
 ### Model Adapters (Examples)
 
-- **@angelerator/uuics-models-claude**: Claude AI integration example
-- **@angelerator/uuics-models-openai**: OpenAI GPT integration example
+- **[@angelerator/uuics-models-claude](https://www.npmjs.com/package/@angelerator/uuics-models-claude)**: Claude AI integration example
+- **[@angelerator/uuics-models-openai](https://www.npmjs.com/package/@angelerator/uuics-models-openai)**: OpenAI GPT integration example
 
 ## Installation
 
 ```bash
-# Using pnpm
-pnpm install @angelerator/uuics-core
-
-# With React
-pnpm install @angelerator/uuics-core @angelerator/uuics-react
-
-# Using npm
+# Core package only
 npm install @angelerator/uuics-core
 
+# With React hooks and components
+npm install @angelerator/uuics-core @angelerator/uuics-react
+
+# With AI model adapters
+npm install @angelerator/uuics-core @angelerator/uuics-models-claude
+npm install @angelerator/uuics-core @angelerator/uuics-models-openai
+
+# Everything together
+npm install @angelerator/uuics-core @angelerator/uuics-react @angelerator/uuics-models-claude @angelerator/uuics-models-openai
+
+# Using pnpm
+pnpm add @angelerator/uuics-core @angelerator/uuics-react
+
 # Using yarn
-yarn add @angelerator/uuics-core
+yarn add @angelerator/uuics-core @angelerator/uuics-react
 ```
 
 ## Quick Start

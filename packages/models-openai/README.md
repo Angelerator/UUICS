@@ -9,8 +9,19 @@ This is a **reference implementation** showing how to integrate UUICS with OpenA
 ## Installation
 
 ```bash
+# npm
 npm install @angelerator/uuics-core @angelerator/uuics-models-openai
+
+# pnpm
+pnpm add @angelerator/uuics-core @angelerator/uuics-models-openai
+
+# yarn
+yarn add @angelerator/uuics-core @angelerator/uuics-models-openai
 ```
+
+**NPM Packages**:
+- [@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)
+- [@angelerator/uuics-models-openai](https://www.npmjs.com/package/@angelerator/uuics-models-openai)
 
 ## Usage
 
