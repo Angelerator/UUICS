@@ -1,6 +1,6 @@
 {
   "name": "@angelerator/uuics-react",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Universal UI Context System - React hooks and components",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -50,7 +50,7 @@
     "react": ">=18.0.0"
   },
   "dependencies": {
-    "@angelerator/uuics-core": "^1.0.0"
+    "@angelerator/uuics-core": "^1.0.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",
