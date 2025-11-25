@@ -3,6 +3,7 @@
  */
 
 import type { ActionCommand, ActionResult, PageContext } from '../types';
+import { cleanAndValidateSelector } from '../utils/selectorSanitizer';
 
 /**
  * Action Executor class
@@ -23,13 +24,23 @@ export class ActionExecutor {
         };
       }
 
-      // Find target element
+      // Validate and sanitize selector first
+      const selectorValidation = cleanAndValidateSelector(command.target);
+      if (!selectorValidation.success) {
+        return {
+          success: false,
+          message: 'Invalid selector',
+          error: selectorValidation.error,
+        };
+      }
+
+      // Find target element using sanitized selector
       const element = this.findElement(command.target);
       if (!element) {
         return {
           success: false,
           message: 'Target element not found',
-          error: `No element matching selector: ${command.target}`,
+          error: `No element matching selector: ${selectorValidation.selector} (original: ${command.target})`,
         };
       }
 
@@ -62,13 +73,31 @@ export class ActionExecutor {
   }
 
   /**
-   * Find element by selector
+   * Find element by selector (with automatic sanitization)
    */
   private findElement(selector: string): HTMLElement | null {
+    // Sanitize and validate selector first
+    const cleaned = cleanAndValidateSelector(selector);
+    
+    if (!cleaned.success) {
+      console.error('[UUICS Executor]', cleaned.error);
+      return null;
+    }
+
+    // Log if sanitization made changes
+    if (cleaned.warnings && cleaned.warnings.length > 0) {
+      console.warn('[UUICS Executor] Auto-sanitized selector:', {
+        original: selector,
+        cleaned: cleaned.selector,
+        changes: cleaned.warnings,
+      });
+    }
+
     try {
-      return document.querySelector(selector);
+      return document.querySelector(cleaned.selector!);
     } catch (error) {
-      console.error('[UUICS Executor] Invalid selector:', selector, error);
+      // This should rarely happen now since we pre-validate
+      console.error('[UUICS Executor] Unexpected querySelector error:', cleaned.selector, error);
       return null;
     }
   }
@@ -220,7 +249,33 @@ export class ActionExecutor {
   private executeSubmit(element: HTMLElement): ActionResult {
     try {
       if (element instanceof HTMLFormElement) {
-        element.submit();
+        // Find submit button in the form and click it
+        // This ensures React's onSubmit handler runs and can preventDefault
+        const submitButton = element.querySelector('button[type="submit"]') as HTMLButtonElement;
+        
+        if (submitButton) {
+          // Click the submit button - React will handle it
+          submitButton.click();
+          
+          return {
+            success: true,
+            message: 'Form submitted successfully',
+          };
+        }
+        
+        // Fallback: dispatch submit event (allows preventDefault)
+        const submitEvent = new Event('submit', {
+          bubbles: true,
+          cancelable: true,
+        });
+        
+        const dispatched = element.dispatchEvent(submitEvent);
+        
+        // Only actually submit if not prevented
+        if (dispatched) {
+          // React/handlers didn't preventDefault, so we submit
+          element.submit();
+        }
         
         return {
           success: true,

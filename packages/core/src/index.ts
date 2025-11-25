@@ -60,3 +60,11 @@ export {
   getElementBounds,
 } from './utils';
 
+export {
+  sanitizeSelector,
+  validateSelector,
+  cleanAndValidateSelector,
+} from './utils/selectorSanitizer';
+
+export type { SanitizationResult } from './utils/selectorSanitizer';
+
