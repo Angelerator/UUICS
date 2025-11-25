@@ -128,6 +128,26 @@ export class ActionExecutor {
    */
   private executeClick(element: HTMLElement): ActionResult {
     try {
+      // Check if element is disabled
+      if (element instanceof HTMLButtonElement || element instanceof HTMLInputElement) {
+        if (element.disabled) {
+          return {
+            success: false,
+            message: 'Click failed: element is disabled',
+            error: 'Target element is disabled and cannot be clicked',
+          };
+        }
+      }
+      
+      // Check if element has aria-disabled
+      if (element.getAttribute('aria-disabled') === 'true') {
+        return {
+          success: false,
+          message: 'Click failed: element is disabled (aria-disabled)',
+          error: 'Target element has aria-disabled="true"',
+        };
+      }
+      
       element.click();
       
       return {

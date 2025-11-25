@@ -328,12 +328,17 @@ export class Serializer {
       : '';
     parts.push(`- **${element.label}${selectorHint}**`);
     
-    if (element.value !== undefined) {
+    if (element.value !== undefined && element.value !== '') {
       parts.push(`(value: "${element.value}")`);
     }
     
+    // Emphasize disabled state for buttons and interactive elements
     if (!element.enabled) {
-      parts.push('[DISABLED]');
+      if (element.type === 'button') {
+        parts.push('⛔ **[DISABLED - DO NOT CLICK]**');
+      } else {
+        parts.push('[DISABLED]');
+      }
     }
     
     // Include dropdown options if available, showing both label and value
