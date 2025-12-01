@@ -3,7 +3,7 @@
  */
 
 import { createContext, useContext, ReactNode } from 'react';
-import type { UUICSConfig } from '@uuics/core';
+import type { UUICSConfig } from '@angelerator/uuics-core';
 import { useUICS } from '../hooks/useUICS';
 
 /**

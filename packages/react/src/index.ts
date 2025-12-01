@@ -22,5 +22,5 @@ export type {
   SerializationFormat,
   SerializedContext,
   UUICSConfig,
-} from '@uuics/core';
+} from '@angelerator/uuics-core';
 

@@ -3,8 +3,8 @@
  */
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { UUICSEngine } from '@uuics/core';
-import type { PageContext, ActionCommand, ActionResult, UUICSConfig } from '@uuics/core';
+import { UUICSEngine } from '@angelerator/uuics-core';
+import type { PageContext, ActionCommand, ActionResult, UUICSConfig } from '@angelerator/uuics-core';
 
 /**
  * Hook to use UUICS in a React component

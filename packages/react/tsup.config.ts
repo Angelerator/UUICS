@@ -10,7 +10,8 @@ export default defineConfig({
   minify: false,
   treeshake: true,
   target: 'es2020',
-  external: ['react'],
+  noExternal: [],
+  external: ['react', '@angelerator/uuics-core', '@uuics/core', /^@uuics\//],
   platform: 'browser',
 });
 

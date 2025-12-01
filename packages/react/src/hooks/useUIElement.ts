@@ -3,7 +3,7 @@
  */
 
 import { useMemo } from 'react';
-import type { UIElement } from '@uuics/core';
+import type { UIElement } from '@angelerator/uuics-core';
 import { useUICS } from './useUICS';
 
 /**
