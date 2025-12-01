@@ -133,34 +133,42 @@ export class Serializer {
     lines.push(`Timestamp: ${new Date(context.timestamp).toISOString()}`);
     lines.push('');
 
+    // Filter out non-actionable elements and deduplicate
+    const actionableTypes = ['button', 'input', 'select', 'textarea', 'link', 'checkbox', 'radio', 'switch'];
+    const filteredElements = this.deduplicateElements(
+      context.elements.filter(el => actionableTypes.includes(el.type))
+    );
+
     // Summary
     lines.push('## Summary\n');
-    lines.push(`Total Elements: ${context.elements.length}`);
+    lines.push(`Total Actionable Elements: ${filteredElements.length}`);
     lines.push(`Available Actions: ${context.actions.length}`);
     if (context.forms && context.forms.length > 0) {
       lines.push(`Forms: ${context.forms.length}`);
     }
     lines.push('');
 
-    // Interactive Elements
-    lines.push('## Interactive Elements\n');
-    
-    const groupedElements = this.groupElementsByType(context.elements);
-    
-    for (const [type, elements] of Object.entries(groupedElements)) {
-      if (elements.length === 0) continue;
+    // Interactive Elements (actionable only)
+    if (filteredElements.length > 0) {
+      lines.push('## Interactive Elements\n');
       
-      lines.push(`### ${this.capitalizeFirst(type)}s (${elements.length})\n`);
+      const groupedElements = this.groupElementsByType(filteredElements);
       
-      for (const element of elements.slice(0, 50)) { // Show up to 50 elements per type
-        lines.push(this.formatElementNatural(element));
+      for (const [type, elements] of Object.entries(groupedElements)) {
+        if (elements.length === 0) continue;
+        
+        lines.push(`### ${this.capitalizeFirst(type)}s (${elements.length})\n`);
+        
+        for (const element of elements.slice(0, 30)) { // Show up to 30 elements per type
+          lines.push(this.formatElementNatural(element));
+        }
+        
+        if (elements.length > 30) {
+          lines.push(`... and ${elements.length - 30} more\n`);
+        }
+        
+        lines.push('');
       }
-      
-      if (elements.length > 50) {
-        lines.push(`... and ${elements.length - 50} more\n`);
-      }
-      
-      lines.push('');
     }
 
     // Forms
@@ -183,25 +191,29 @@ export class Serializer {
       }
     }
 
-    // Available Actions
-    lines.push('## Available Actions\n');
+    // Available Actions (deduplicated)
+    const deduplicatedActions = this.deduplicateActions(context.actions);
     
-    const groupedActions = this.groupActionsByType(context.actions);
-    
-    for (const [type, actions] of Object.entries(groupedActions)) {
-      if (actions.length === 0) continue;
+    if (deduplicatedActions.length > 0) {
+      lines.push('## Available Actions\n');
       
-      lines.push(`### ${this.capitalizeFirst(type)} (${actions.length})\n`);
+      const groupedActions = this.groupActionsByType(deduplicatedActions);
       
-      for (const action of actions.slice(0, 50)) { // Show up to 50 actions per type
-        lines.push(`- ${action.description} (target: \`${action.target}\`)`);
+      for (const [type, actions] of Object.entries(groupedActions)) {
+        if (actions.length === 0) continue;
+        
+        lines.push(`### ${this.capitalizeFirst(type)} (${actions.length})\n`);
+        
+        for (const action of actions.slice(0, 30)) { // Show up to 30 actions per type
+          lines.push(`- ${action.description} (target: \`${action.target}\`)`);
+        }
+        
+        if (actions.length > 30) {
+          lines.push(`... and ${actions.length - 30} more`);
+        }
+        
+        lines.push('');
       }
-      
-      if (actions.length > 50) {
-        lines.push(`... and ${actions.length - 50} more`);
-      }
-      
-      lines.push('');
     }
 
     // Metadata
@@ -396,6 +408,41 @@ export class Serializer {
    */
   private capitalizeFirst(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  /**
+   * Deduplicate elements by selector
+   */
+  private deduplicateElements(elements: UIElement[]): UIElement[] {
+    const seen = new Set<string>();
+    const unique: UIElement[] = [];
+
+    for (const element of elements) {
+      if (!seen.has(element.selector)) {
+        seen.add(element.selector);
+        unique.push(element);
+      }
+    }
+
+    return unique;
+  }
+
+  /**
+   * Deduplicate actions by target selector
+   */
+  private deduplicateActions(actions: any[]): any[] {
+    const seen = new Set<string>();
+    const unique: any[] = [];
+
+    for (const action of actions) {
+      const key = `${action.type}:${action.target}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(action);
+      }
+    }
+
+    return unique;
   }
 }
 

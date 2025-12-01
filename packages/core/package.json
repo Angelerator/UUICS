@@ -1,6 +1,6 @@
 {
   "name": "@angelerator/uuics-core",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Universal UI Context System - AI-powered web interface understanding and interaction",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
