@@ -155,7 +155,7 @@ export class ActionExecutor {
   /**
    * Execute click action
    */
-  private executeClick(element: HTMLElement): ActionResult {
+  private async executeClick(element: HTMLElement): Promise<ActionResult> {
     try {
       // Check if element is disabled
       if (element instanceof HTMLButtonElement || element instanceof HTMLInputElement) {
@@ -179,6 +179,10 @@ export class ActionExecutor {
       
       element.click();
       
+      // Wait for React/framework state to settle after click
+      // This is crucial for UI that updates state on click
+      await this.waitForStateSettle();
+      
       return {
         success: true,
         message: 'Click executed successfully',
@@ -195,7 +199,7 @@ export class ActionExecutor {
   /**
    * Execute setValue action
    */
-  private executeSetValue(element: HTMLElement, value: unknown): ActionResult {
+  private async executeSetValue(element: HTMLElement, value: unknown): Promise<ActionResult> {
     try {
       if (!value && value !== '' && value !== 0) {
         return {
@@ -222,6 +226,9 @@ export class ActionExecutor {
         element.dispatchEvent(new Event('input', { bubbles: true }));
         element.dispatchEvent(new Event('change', { bubbles: true }));
         
+        // Wait for React state to settle
+        await this.waitForStateSettle();
+        
         return {
           success: true,
           message: 'Value set successfully',
@@ -246,7 +253,7 @@ export class ActionExecutor {
   /**
    * Execute submit action
    */
-  private executeSubmit(element: HTMLElement): ActionResult {
+  private async executeSubmit(element: HTMLElement): Promise<ActionResult> {
     try {
       if (element instanceof HTMLFormElement) {
         // Find submit button in the form and click it
@@ -256,6 +263,9 @@ export class ActionExecutor {
         if (submitButton) {
           // Click the submit button - React will handle it
           submitButton.click();
+          
+          // Wait for React state to settle
+          await this.waitForStateSettle();
           
           return {
             success: true,
@@ -276,6 +286,9 @@ export class ActionExecutor {
           // React/handlers didn't preventDefault, so we submit
           element.submit();
         }
+        
+        // Wait for React state to settle
+        await this.waitForStateSettle();
         
         return {
           success: true,
@@ -300,7 +313,7 @@ export class ActionExecutor {
   /**
    * Execute select action
    */
-  private executeSelect(element: HTMLElement, value: unknown): ActionResult {
+  private async executeSelect(element: HTMLElement, value: unknown): Promise<ActionResult> {
     try {
       if (element instanceof HTMLSelectElement) {
         // Handle multi-select
@@ -326,6 +339,9 @@ export class ActionExecutor {
           element.dispatchEvent(new Event('input', { bubbles: true }));
           element.dispatchEvent(new Event('change', { bubbles: true }));
           
+          // Wait for React state to settle
+          await this.waitForStateSettle();
+          
           return {
             success: true,
             message: `Multiple options selected successfully`,
@@ -349,6 +365,9 @@ export class ActionExecutor {
         element.dispatchEvent(new Event('input', { bubbles: true }));
         element.dispatchEvent(new Event('change', { bubbles: true }));
         
+        // Wait for React state to settle
+        await this.waitForStateSettle();
+        
         return {
           success: true,
           message: 'Option selected successfully',
@@ -361,6 +380,9 @@ export class ActionExecutor {
         
         // Trigger change event
         element.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        // Wait for React state to settle
+        await this.waitForStateSettle();
         
         return {
           success: true,
@@ -385,7 +407,7 @@ export class ActionExecutor {
   /**
    * Execute check/uncheck action
    */
-  private executeCheck(element: HTMLElement, checked: boolean): ActionResult {
+  private async executeCheck(element: HTMLElement, checked: boolean): Promise<ActionResult> {
     try {
       if (element instanceof HTMLInputElement && 
           (element.type === 'checkbox' || element.type === 'radio')) {
@@ -393,6 +415,9 @@ export class ActionExecutor {
         
         // Trigger change event
         element.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        // Wait for React state to settle
+        await this.waitForStateSettle();
         
         return {
           success: true,
@@ -538,6 +563,57 @@ export class ActionExecutor {
    */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Wait for React/framework state changes to settle after an action
+   * Uses a combination of techniques to ensure state updates are processed:
+   * 1. requestAnimationFrame - waits for next paint
+   * 2. MutationObserver - detects DOM changes
+   * 3. setTimeout - fallback timeout
+   */
+  private waitForStateSettle(): Promise<void> {
+    return new Promise((resolve) => {
+      // First, wait for requestAnimationFrame (browser paint)
+      requestAnimationFrame(() => {
+        // Then wait for microtasks to flush (Promise.resolve)
+        Promise.resolve().then(() => {
+          // Use MutationObserver to detect DOM changes
+          let settled = false;
+          let timeoutId: ReturnType<typeof setTimeout>;
+          
+          const observer = new MutationObserver(() => {
+            // DOM changed, reset the settle timer
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+              if (!settled) {
+                settled = true;
+                observer.disconnect();
+                resolve();
+              }
+            }, 100); // Wait 100ms after last mutation
+          });
+          
+          // Observe the entire document for changes
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            characterData: true,
+          });
+          
+          // Fallback: resolve after 300ms even if no mutations detected
+          // This handles cases where the click doesn't cause DOM changes
+          setTimeout(() => {
+            if (!settled) {
+              settled = true;
+              observer.disconnect();
+              resolve();
+            }
+          }, 300);
+        });
+      });
+    });
   }
 }
 
