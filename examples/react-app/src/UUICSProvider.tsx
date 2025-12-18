@@ -1,15 +1,16 @@
 /**
- * UUICS React Hook
+ * UUICS React Integration
+ * Provider and hooks for using UUICS in React components
  */
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { UUICSEngine } from '@angelerator/uuics-core';
 import type { PageContext, ActionCommand, ActionResult, UUICSConfig } from '@angelerator/uuics-core';
 
 /**
  * Hook to use UUICS in a React component
  */
-export function useUICS(config?: UUICSConfig) {
+function useUICS(config?: UUICSConfig) {
   const [context, setContext] = useState<PageContext | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const engineRef = useRef<UUICSEngine | null>(null);
@@ -89,5 +90,49 @@ export function useUICS(config?: UUICSConfig) {
     scan,
     engine: engineRef.current,
   };
+}
+
+/**
+ * UUICS Context type
+ */
+type UUICSContextType = ReturnType<typeof useUICS>;
+
+/**
+ * UUICS Context
+ */
+const UUICSContext = createContext<UUICSContextType | null>(null);
+
+/**
+ * Provider props
+ */
+interface UUICSProviderProps {
+  children: ReactNode;
+  config?: UUICSConfig;
+}
+
+/**
+ * UUICS Provider component
+ */
+export function UUICSProvider({ children, config }: UUICSProviderProps) {
+  const uuics = useUICS(config);
+
+  return (
+    <UUICSContext.Provider value={uuics}>
+      {children}
+    </UUICSContext.Provider>
+  );
+}
+
+/**
+ * Hook to use UUICS from context
+ */
+export function useUUICSContext(): UUICSContextType {
+  const context = useContext(UUICSContext);
+
+  if (!context) {
+    throw new Error('useUUICSContext must be used within a UUICSProvider');
+  }
+
+  return context;
 }
 

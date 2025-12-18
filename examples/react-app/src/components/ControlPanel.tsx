@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useUUICSContext } from '@angelerator/uuics-react';
+import { useUUICSContext } from '../UUICSProvider';
 import Card from './Card';
 
 export default function ControlPanel() {

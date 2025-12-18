@@ -1,11 +1,10 @@
 /**
- * Claude Model Adapter Example
+ * Claude Adapter for UUICS
  * 
- * This is a reference implementation showing how to integrate UUICS
- * with Claude AI. Users should adapt this to their needs.
+ * Formats page context for Claude and parses action responses.
  */
 
-import type { PageContext } from '@uuics/core';
+import type { PageContext } from '@angelerator/uuics-core';
 
 /**
  * Claude adapter configuration
@@ -20,8 +19,7 @@ export interface ClaudeAdapterConfig {
 /**
  * Claude Adapter
  * 
- * Example adapter for integrating UUICS with Claude AI.
- * This demonstrates how to format context for Claude and parse responses.
+ * Formats UUICS context for Claude and parses action responses.
  */
 export class ClaudeAdapter {
   private apiKey: string;

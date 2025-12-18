@@ -8,8 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uuics/core": "workspace:*",
-    "@uuics/models-claude": "workspace:*"
+    "@angelerator/uuics-core": "workspace:*"
   },
   "devDependencies": {
     "vite": "^5.0.8"

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UUICSProvider, useUUICSContext } from '@angelerator/uuics-react';
+import { UUICSProvider, useUUICSContext } from './UUICSProvider';
 import ControlPanel from './components/ControlPanel';
 import TextInputs from './components/TextInputs';
 import SelectionControls from './components/SelectionControls';

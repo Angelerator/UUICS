@@ -9,9 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uuics/core": "workspace:*",
-    "@uuics/react": "workspace:*",
-    "@uuics/models-claude": "workspace:*",
+    "@angelerator/uuics-core": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
