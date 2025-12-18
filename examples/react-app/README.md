@@ -1,221 +1,326 @@
-# UUICS React Example with Claude AI Chat
+# UUICS React Example
 
-This example demonstrates the integration of UUICS with a React application, including an interactive Claude AI chat popup.
+A complete React application demonstrating UUICS integration with Claude AI. This example shows how to build an AI-powered web assistant that can understand and interact with your UI.
 
-## Features
+## 🎯 What This Example Shows
 
-- Demo form with various input types
-- Real-time UUICS context tracking
-- Debug panel showing serialized context
-- Claude AI chat interface
+- **React Integration**: Using UUICS with React context and hooks
+- **Claude AI Chat**: Real-time conversation with Claude about the page
+- **Action Execution**: Claude can click buttons, fill forms, select options
+- **State Tracking**: Application state exposed to AI context
+- **Multiple UI Components**: Forms, dropdowns, checkboxes, and more
 
-Claude AI Chat Popup
+## 🚀 Quick Start
 
-The chat popup demonstrates how to integrate Claude AI with UUICS to create an AI-powered assistant that can understand and interact with your web page.
+### Prerequisites
 
-CORS Limitation
+- Node.js 18+
+- pnpm
+- Claude Code subscription (for `claude login`)
 
-Direct browser calls to the Claude API are blocked by CORS policy. This is a security feature implemented by Anthropic. The demo shows the UI integration, but requires a backend proxy to actually work.
+### Setup
 
-How to Implement a Backend Proxy
+```bash
+# From the repository root
+pnpm install
+pnpm build
 
-To make the chat functional in production, you need to create a backend endpoint that:
-
-1. Receives chat requests from your frontend
-2. Forwards them to the Anthropic API with your API key
-3. Returns the response to your frontend
-
-Example Implementation
-
-Node.js/Express:
-
-```javascript
-const express = require('express');
-const app = express();
-
-app.use(express.json());
-
-app.post('/api/chat', async (req, res) => {
-  const { messages, context } = req.body;
-  
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.CLAUDE_API_KEY,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
-      system: context, // UUICS context as system prompt
-      messages: messages
-    })
-  });
-  
-  const data = await response.json();
-  res.json(data);
-});
-
-app.listen(3001);
+# Navigate to this example
+cd examples/react-app
 ```
 
-Next.js API Route:
+### Running the Example
 
-```typescript
-// pages/api/chat.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
+**Terminal 1 - Start the React app:**
+```bash
+pnpm dev
+# Opens at http://localhost:5173 (or next available port)
+```
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+**Terminal 2 - Start the Claude proxy:**
+```bash
+node claude-cli-proxy.cjs
+# Proxy runs at http://localhost:3100
+```
 
-  const { messages, context } = req.body;
+> **Note**: The Claude proxy uses your Claude Code subscription. Make sure you've run `claude login` at least once.
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.CLAUDE_API_KEY!,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
-      system: context,
-      messages: messages
-    })
-  });
+### Using the App
 
-  const data = await response.json();
-  res.json(data);
+1. Open the app in your browser
+2. Click the 🤖 button in the bottom-right corner
+3. Click "Start Chatting"
+4. Try commands like:
+   - "Fill the name field with John Doe"
+   - "Select France as the country"
+   - "Check all the interest checkboxes"
+   - "What options are available for the role dropdown?"
+
+## 📂 Project Structure
+
+```
+react-app/
+├── src/
+│   ├── App.tsx              # Main app component
+│   ├── main.tsx             # Entry point
+│   ├── index.css            # Tailwind styles
+│   │
+│   ├── UUICSProvider.tsx    # React context & hooks for UUICS
+│   ├── ClaudeAdapter.ts     # Claude AI integration
+│   ├── ChatPopup.tsx        # Chat UI component
+│   │
+│   └── components/          # Demo UI components
+│       ├── TextInputs.tsx
+│       ├── SelectionControls.tsx
+│       ├── CheckboxesSection.tsx
+│       ├── RadioButtonsSection.tsx
+│       ├── ActionButtons.tsx
+│       ├── StateTracking.tsx
+│       ├── OutputSection.tsx
+│       └── ...
+│
+├── claude-cli-proxy.cjs     # Proxy server for Claude CLI
+├── package.json
+├── vite.config.ts
+└── tailwind.config.js
+```
+
+## 🔧 Key Components
+
+### UUICSProvider.tsx
+
+Provides UUICS context to the React component tree:
+
+```tsx
+import { UUICSProvider, useUUICSContext } from './UUICSProvider';
+
+// Wrap your app
+function App() {
+  return (
+    <UUICSProvider config={{ scan: { interval: 0 } }}>
+      <MyComponent />
+    </UUICSProvider>
+  );
+}
+
+// Use in components
+function MyComponent() {
+  const { engine, context, scan, execute, serialize } = useUUICSContext();
+  
+  const handleScan = async () => {
+    await scan();
+    console.log('Elements:', context?.elements.length);
+  };
+  
+  return <button onClick={handleScan}>Scan Page</button>;
 }
 ```
 
-Then update the ChatPopup component to call your backend instead of the Anthropic API directly:
+### ClaudeAdapter.ts
+
+Handles Claude AI integration:
 
 ```typescript
-// In ChatPopup.tsx
-const response = await fetch('/api/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    messages: [{ role: 'user', content: userMessage }],
-    context: contextString
-  })
+import { ClaudeAdapter } from './ClaudeAdapter';
+
+const adapter = new ClaudeAdapter({
+  apiKey: 'proxy-handles-key',
+  proxyUrl: 'http://localhost:3100'
 });
 
-const data = await response.json();
-const assistantMessage = data.content[0].text;
+// Format context for Claude
+const systemPrompt = adapter.formatContext(pageContext, serializedContext);
+
+// Send message and get response
+const response = await adapter.chat(userMessage, pageContext, serializedContext);
+
+// Parse actions from response
+const actions = adapter.parseResponse(response);
+// Returns: [{ action: 'setValue', target: '#name', parameters: { value: 'John' } }]
 ```
 
-Running the Example
+### ChatPopup.tsx
 
-```bash
-pnpm install
-pnpm dev
+The chat interface that ties everything together:
+
+1. Scans the page when user sends a message
+2. Serializes context to natural language
+3. Sends to Claude via the adapter
+4. Parses response for action commands
+5. Executes actions on the page
+
+## 🔌 Claude CLI Proxy
+
+The `claude-cli-proxy.cjs` server:
+
+- Runs on port 3100
+- Uses your Claude Code subscription (no API key needed)
+- Accepts requests from the React app
+- Forwards to Claude CLI and returns responses
+
+### How It Works
+
+```
+React App (Browser)
+       │
+       ▼ POST /api/chat
+┌──────────────────┐
+│ claude-cli-proxy │ ◀── Uses `claude` CLI
+└──────────────────┘
+       │
+       ▼
+   Claude API
 ```
 
-The app will start on http://localhost:3006 (or the next available port).
+### Alternative: Direct API Key
 
-Features Demonstrated
+If you prefer using an API key directly, modify `ChatPopup.tsx`:
 
-1. UUICS Context Tracking
-   - Automatic scanning of DOM elements
-   - Form state tracking
-   - Available actions detection
+```typescript
+const adapter = new ClaudeAdapter({
+  apiKey: 'sk-ant-your-key-here',
+  // Remove proxyUrl to call API directly
+});
+```
 
-2. Debug Panel
-   - Switch between Natural Language, JSON, and OpenAPI formats
-   - Real-time context updates
-   - Element and action counts
+## 🎨 UI Features Demonstrated
 
-3. Claude AI Chat (UI Demo)
-   - Beautiful chat interface
-   - API key setup screen
-   - Message history
-   - CORS limitation explanation with implementation guide
-   - Error handling
+### Form Elements
+- Text inputs with labels
+- Email, phone, number inputs
+- Textareas for long text
+- Date and time pickers
+- Color picker
+- Range slider
 
-Architecture
+### Selection Controls
+- Single-select dropdowns
+- Multi-select dropdowns
+- Radio button groups
 
-The example shows how to:
-- Integrate UUICS with React using the UUICSProvider
-- Use the useUICS hook to access context
-- Serialize context for AI consumption
-- Build a chat interface that can interact with the page
-- Handle API limitations and provide user guidance
+### Toggles
+- Checkboxes with labels
+- Toggle switches
 
-Note: This is a demonstration of the UI integration. For production use, implement a backend proxy as described above to handle API calls securely.
+### Buttons
+- Primary/secondary buttons
+- Action buttons (save, submit, delete)
 
-## Key Files
+### State Tracking
+- Proxy-based state tracking
+- Manual state registration
+- Real-time state display
 
-- `src/App.tsx` - Main application with UUICS provider
-- `src/DemoForm.tsx` - Sample form demonstrating UUICS tracking
-- `src/ChatPopup.tsx` - Claude AI chat interface
-- `src/DebugPanel.tsx` - Context visualization panel
+## 🔄 How the AI Interaction Works
 
-## Learning Points
+```
+1. User: "Set the name to John"
+   
+2. App scans the page:
+   - Finds #name input
+   - Serializes to: "Name (#name) → `#name`"
+   
+3. Sends to Claude:
+   - System: Context about page elements
+   - User: "Set the name to John"
+   
+4. Claude responds:
+   "I'll set the name field to John."
+   ```json
+   { "action": "setValue", "target": "#name", "parameters": { "value": "John" } }
+   ```
+   
+5. App parses JSON and executes:
+   await engine.execute({ action: 'setValue', target: '#name', parameters: { value: 'John' } });
+   
+6. Input field now contains "John"
+```
 
-This example shows:
+## 🛠️ Customization
 
-1. **Provider Setup**: How to configure UUICSProvider at the app root
-2. **Hook Usage**: Using `useUICS` to access context and execute actions
-3. **State Tracking**: Tracking form state and application data
-4. **AI Integration**: Connecting Claude AI with UUICS context
-5. **Debug Tools**: Using DebugPanel for development
-6. **Action Execution**: Running actions based on AI responses
+### Modifying the Claude Prompt
 
-## Customization
+Edit `ClaudeAdapter.ts` to customize how Claude understands your page:
 
-Modify the example for your needs:
+```typescript
+formatContext(_context: PageContext, naturalLanguage: string): string {
+  return `Your custom system prompt here...
+  
+  Page Context:
+  ${naturalLanguage}
+  
+  Your custom instructions...`;
+}
+```
+
+### Adding New Actions
+
+The engine supports custom actions:
+
+```typescript
+await engine.execute({
+  action: 'custom',
+  target: '#element',
+  script: 'element.scrollIntoView({ behavior: "smooth" })'
+});
+```
+
+### Changing the Scan Configuration
+
+Modify the provider config in `App.tsx`:
 
 ```tsx
-// Change scan configuration
-<UUICSProvider
-  config={{
-    scan: {
-      interval: 1000, // Faster scanning
-      rootSelectors: ['#main-content'], // Limit scope
-      excludeSelectors: ['.ignore-me'], // Skip elements
-    },
-    state: {
-      enabled: true, // Enable state tracking
-      exclude: ['*password*', '*token*'], // Protect sensitive data
-    }
-  }}
->
+<UUICSProvider config={{
+  scan: {
+    interval: 2000,  // Auto-scan every 2 seconds
+    excludeSelectors: ['.ignore-me'],
+    depth: 15
+  },
+  state: {
+    enabled: true,
+    exclude: ['*password*']
+  }
+}}>
 ```
 
-## Production Deployment
+## 🐛 Troubleshooting
 
-For production:
+### "Cannot connect to proxy server"
 
-1. ✅ Implement backend proxy for API calls
-2. ✅ Add error boundaries
-3. ✅ Implement rate limiting
-4. ✅ Add user authentication
-5. ✅ Enable HTTPS
-6. ✅ Add monitoring/logging
-7. ✅ Optimize bundle size
+Make sure the Claude proxy is running:
+```bash
+node claude-cli-proxy.cjs
+```
 
-## Performance
+### "Claude CLI not found"
 
-This example is optimized for development. For production:
+Install Claude Code and login:
+```bash
+# Install Claude Code from https://claude.ai/download
+claude login
+```
 
-- Set `scan.interval: 0` and scan manually
-- Use `rootSelectors` to limit scope
-- Enable `performance.enableCache`
-- Lazy load the chat popup
+### Actions not working
 
-## Contributing
+Check the browser console for:
+- Element selector issues
+- Permission errors
+- Network failures
 
-Found an issue or want to improve the example? See [Contributing Guide](../../README.md#contributing).
+## 📝 Example Conversations
 
-## License
+**Form Filling:**
+> "Fill out the form with name John Doe, email john@example.com, and select United States as the country"
 
-MIT - see [LICENSE](../../LICENSE)
+**Information Queries:**
+> "What options are available in the skills dropdown?"
+
+**Multiple Actions:**
+> "Check all the interest checkboxes and set experience to Advanced"
+
+**State Inspection:**
+> "What is the current user state?"
+
+## 📄 License
+
+MIT - Part of the UUICS project.

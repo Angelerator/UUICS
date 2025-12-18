@@ -1,49 +1,63 @@
 # @angelerator/uuics-core
 
-Core runtime engine for Universal UI Context System (UUICS).
+[![npm version](https://img.shields.io/npm/v/@angelerator/uuics-core.svg)](https://www.npmjs.com/package/@angelerator/uuics-core)
+[![npm downloads](https://img.shields.io/npm/dm/@angelerator/uuics-core.svg)](https://www.npmjs.com/package/@angelerator/uuics-core)
 
-## Features
+The core engine for **Universal UI Context System (UUICS)** - a performance-optimized system for AI agents to understand and interact with web interfaces.
 
-- **DOM Scanning**: Performance-optimized recursive DOM traversal with caching
-- **Mutation Tracking**: Debounced mutation observer and event tracking
-- **Context Aggregation**: Intelligent aggregation of UI elements into structured context
-- **Serialization**: Multiple output formats (JSON, Natural Language, OpenAPI)
-- **Action Execution**: Safe execution of UI actions with validation and error handling
-
-## Installation
+## 📦 Installation
 
 ```bash
-# npm
 npm install @angelerator/uuics-core
 
-# pnpm
+# or
 pnpm add @angelerator/uuics-core
 
-# yarn
+# or
 yarn add @angelerator/uuics-core
 ```
 
-**NPM Package**: [@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)
-
-## Basic Usage
+## 🚀 Quick Start
 
 ```javascript
 import { UUICSEngine } from '@angelerator/uuics-core';
 
-const uuics = new UUICSEngine({
-  scan: { interval: 2000 },
-  track: { mutations: true },
-});
-
+// Create and initialize
+const uuics = new UUICSEngine();
 await uuics.initialize();
-const context = uuics.getContext();
+
+// Scan the page
+const context = await uuics.scan();
+console.log(`Found ${context.elements.length} elements`);
+
+// Get AI-friendly context
+const text = uuics.serialize('natural');
+console.log(text);
+
+// Execute an action
+await uuics.execute({
+  action: 'setValue',
+  target: '#email',
+  parameters: { value: 'user@example.com' }
+});
 ```
 
-## API Documentation
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| **DOM Scanning** | Recursive traversal with intelligent element detection |
+| **Context Serialization** | JSON, Natural Language, and OpenAPI formats |
+| **Action Execution** | Click, type, select, check, and custom actions |
+| **State Tracking** | Track JavaScript variables alongside DOM state |
+| **Mutation Tracking** | Debounced observer for DOM changes |
+| **Performance** | Smart caching, idle callbacks, element limits |
+
+## 📖 API Reference
 
 ### UUICSEngine
 
-Main engine class that orchestrates all components.
+The main class that orchestrates all functionality.
 
 #### Constructor
 
@@ -53,57 +67,116 @@ new UUICSEngine(config?: UUICSConfig)
 
 #### Methods
 
-**initialize(): Promise<void>**
+##### Core Methods
 
-Initialize the engine and perform initial scan.
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `initialize()` | `Promise<void>` | Initialize the engine |
+| `scan(root?, config?)` | `Promise<PageContext>` | Scan DOM and update context |
+| `getContext()` | `PageContext \| null` | Get current context |
+| `serialize(format?)` | `string` | Serialize to json/natural/openapi |
+| `subscribe(cb)` | `() => void` | Subscribe to updates, returns unsubscribe |
+| `destroy()` | `void` | Cleanup and destroy |
 
-**scan(root?: HTMLElement): Promise<PageContext>**
+##### Action Methods
 
-Scan the DOM and update context.
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `execute(command)` | `Promise<ActionResult>` | Execute single action |
+| `executeBatch(commands)` | `Promise<ActionResult[]>` | Execute multiple actions |
 
-**getContext(): PageContext | null**
+##### State Tracking
 
-Get the current page context.
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `trackState(name, obj)` | `T` | Track object with proxy |
+| `registerState(name, getter)` | `void` | Register computed state |
+| `untrackState(name)` | `void` | Stop tracking object |
+| `unregisterState(name)` | `void` | Remove registered state |
+| `getTrackedStateNames()` | `string[]` | List tracked states |
 
-**subscribe(callback: (context: PageContext) => void): () => void**
+##### Utility Methods
 
-Subscribe to context updates. Returns unsubscribe function.
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `findElement(selector)` | `UIElement \| null` | Find element by selector |
+| `findElements(type)` | `UIElement[]` | Find elements by type |
+| `updateConfig(config)` | `void` | Update configuration |
+| `clearCache()` | `void` | Clear element cache |
 
-**serialize(format?: 'json' | 'natural' | 'openapi'): string**
+### Configuration
 
-Serialize context to specified format.
+```typescript
+interface UUICSConfig {
+  scan?: {
+    interval?: number;        // Auto-scan interval (0 = manual)
+    depth?: number;           // Max DOM depth (default: 10)
+    includeHidden?: boolean;  // Include hidden elements
+    includeDisabled?: boolean; // Include disabled elements
+    rootSelectors?: string[]; // Only scan these areas
+    excludeSelectors?: string[]; // Skip these areas
+    useIdleCallback?: boolean; // Use requestIdleCallback
+  };
+  
+  track?: {
+    mutations?: boolean;      // Track DOM mutations
+    clicks?: boolean;         // Track clicks
+    changes?: boolean;        // Track input changes
+    submits?: boolean;        // Track form submissions
+    debounceDelay?: number;   // Debounce delay (ms)
+  };
+  
+  state?: {
+    enabled?: boolean;        // Enable state tracking
+    exclude?: string[];       // Patterns to exclude (e.g., '*password*')
+  };
+  
+  performance?: {
+    enableCache?: boolean;    // Enable element caching
+    cacheTTL?: number;        // Cache TTL (ms)
+    maxElements?: number;     // Max elements to scan
+  };
+  
+  debug?: {
+    enabled?: boolean;        // Enable debug logging
+    level?: 'error' | 'warn' | 'info' | 'debug';
+  };
+}
+```
 
-**execute(command: ActionCommand): Promise<ActionResult>**
+### Action Types
 
-Execute a single action command.
+```typescript
+type ActionType = 
+  | 'click'     // Click element
+  | 'setValue'  // Set input/textarea value
+  | 'select'    // Select dropdown option(s)
+  | 'check'     // Check checkbox
+  | 'uncheck'   // Uncheck checkbox
+  | 'submit'    // Submit form
+  | 'focus'     // Focus element
+  | 'scroll'    // Scroll to element
+  | 'hover'     // Hover over element
+  | 'custom';   // Execute custom script
 
-**executeBatch(commands: ActionCommand[]): Promise<ActionResult[]>**
+interface ActionCommand {
+  action: ActionType;
+  target: string;           // CSS selector
+  parameters?: {
+    value?: any;            // For setValue, select
+  };
+  script?: string;          // For custom action
+}
 
-Execute multiple action commands in sequence.
-
-**findElement(selector: string): UIElement | null**
-
-Find an element by CSS selector.
-
-**findElements(type: string): UIElement[]**
-
-Find all elements of a specific type.
-
-**updateConfig(config: Partial<UUICSConfig>): void**
-
-Update engine configuration.
-
-**clearCache(): void**
-
-Clear element cache.
-
-**destroy(): void**
-
-Cleanup and destroy the engine.
+interface ActionResult {
+  success: boolean;
+  message: string;
+  error?: string;
+  data?: any;
+}
+```
 
 ### Types
-
-#### UIElement
 
 ```typescript
 interface UIElement {
@@ -112,19 +185,23 @@ interface UIElement {
   tag: string;
   selector: string;
   label: string;
-  attributes: Record<string, any>;
   value?: any;
   text?: string;
   visible: boolean;
   enabled: boolean;
-  children?: UIElement[];
-  bounds?: { x: number; y: number; width: number; height: number };
+  attributes: Record<string, any>;
+  selectMetadata?: {        // For select elements
+    options: Array<{
+      value: string;
+      label: string;
+      selected: boolean;
+      disabled: boolean;
+    }>;
+    multiple: boolean;
+    selectedValues: string[];
+  };
 }
-```
 
-#### PageContext
-
-```typescript
 interface PageContext {
   id: string;
   timestamp: number;
@@ -132,7 +209,7 @@ interface PageContext {
   title: string;
   elements: UIElement[];
   actions: Action[];
-  forms?: FormState[];
+  state?: Record<string, any>;
   metadata: {
     elementCount: number;
     scanDuration: number;
@@ -142,241 +219,216 @@ interface PageContext {
 }
 ```
 
-#### ActionCommand
+## 🎨 Serialization Formats
 
-```typescript
-interface ActionCommand {
-  action: ActionType;
-  target: string;
-  parameters?: Record<string, unknown>;
-  script?: string;
-}
-```
+### Natural Language
 
-#### ActionResult
-
-```typescript
-interface ActionResult {
-  success: boolean;
-  message: string;
-  error?: string;
-  data?: unknown;
-  context?: PageContext;
-}
-```
-
-## Advanced Usage
-
-### Custom Element Filter
+Best for AI models that work with natural language:
 
 ```javascript
-const uuics = new UUICSEngine({
-  scan: {
-    filter: (element) => {
-      // Only scan elements with data-trackable attribute
-      return element.hasAttribute('data-trackable');
-    },
-  },
-});
+const text = uuics.serialize('natural');
 ```
 
-### Manual Scanning
+Output:
+```
+# Page Context
 
-```javascript
-const uuics = new UUICSEngine({
-  scan: { interval: 0 }, // Disable auto-scan
-});
+Page: My App
+URL: https://example.com
 
-await uuics.initialize();
+## Interactive Elements
 
-// Scan manually when needed
-await uuics.scan();
+### Inputs (3)
+- **Email** → `#email`
+- **Password** → `#password`
+
+### Buttons (2)
+- **Submit** → `#submit-btn`
+
+## Application State
+- user: { name: "John" }
 ```
 
-### Event Subscription
+### JSON
+
+Structured data for programmatic use:
 
 ```javascript
-const unsubscribe = uuics.subscribe((context) => {
-  console.log('Context updated:', context);
-  console.log('Elements:', context.elements.length);
-  console.log('Actions:', context.actions.length);
-});
-
-// Unsubscribe when done
-unsubscribe();
+const json = uuics.serialize('json');
 ```
 
-## Performance Tips
+### OpenAPI
 
-1. **Limit Scan Depth**: Set `scan.depth` to a reasonable value (default: 10)
-2. **Use Auto-Scan Wisely**: Set appropriate interval or disable for manual control
-3. **Enable Caching**: Keep `performance.enableCache` enabled (default: true)
-4. **Filter Elements**: Use `scan.filter` to skip irrelevant elements
-5. **Limit Max Elements**: Set `performance.maxElements` to prevent memory issues
-
-## Components
-
-UUICS Core consists of several modular components that can be used independently:
-
-- `DOMScanner`: DOM traversal and element detection
-- `MutationTracker`: Mutation observation and event tracking
-- `ContextAggregator`: Context aggregation and action generation
-- `Serializer`: Context serialization to various formats
-- `ActionExecutor`: Action validation and execution
+For LLMs with function calling:
 
 ```javascript
-import {
-  DOMScanner,
-  MutationTracker,
-  ContextAggregator,
-  Serializer,
-  ActionExecutor,
-} from '@angelerator/uuics-core';
-
-// Use components independently
-const scanner = new DOMScanner(config);
-const elements = scanner.scan();
+const openapi = uuics.serialize('openapi');
 ```
 
-## State Tracking
+## 🔧 Advanced Usage
 
-Track JavaScript application state and expose it to AI models.
-
-### Proxy-Based Tracking
+### State Tracking
 
 ```javascript
-// Automatically track object changes
-const userState = uuics.trackState('user', {
+// Automatic tracking with Proxy
+const user = uuics.trackState('user', {
   name: 'John',
   preferences: { theme: 'dark' }
 });
 
-userState.name = 'Jane'; // Automatically tracked
-```
+user.name = 'Jane';  // Automatically tracked!
 
-### Manual Registration
-
-```javascript
-let clickCount = 0;
-
-// Register getter for computed values
-uuics.registerState('metrics', () => ({
-  clicks: clickCount,
+// Computed values
+uuics.registerState('stats', () => ({
+  elementCount: document.querySelectorAll('*').length,
   timestamp: Date.now()
 }));
 ```
 
-### Sensitive Data Exclusion
+### Sensitive Data Protection
 
 ```javascript
 const uuics = new UUICSEngine({
   state: {
     enabled: true,
-    exclude: ['*password*', '*token*', '*key*']
+    exclude: ['*password*', '*token*', '*secret*', '*key*', '*auth*']
   }
 });
 
 const auth = uuics.trackState('auth', {
-  username: 'john',
-  password: 'secret', // Will be '[EXCLUDED]' in context
-  apiKey: 'sk-123' // Will be '[EXCLUDED]' in context
+  username: 'john',      // ✅ Included
+  password: 'secret123', // ❌ Shows as '[EXCLUDED]'
+  apiKey: 'sk-abc'       // ❌ Shows as '[EXCLUDED]'
 });
 ```
 
-## Scope Control
-
-Limit scanning to specific DOM areas for better performance.
+### Scope Control
 
 ```javascript
 // Scan only specific areas
-const context = await uuics.scan(undefined, {
-  rootSelectors: ['#main-content', '.sidebar'],
-  excludeSelectors: ['.ads', 'footer']
+await uuics.scan(null, {
+  rootSelectors: ['#main-content', '#sidebar'],
+  excludeSelectors: ['.advertisement', 'footer', 'nav']
 });
 ```
 
-## Error Handling
+### Batch Actions
 
 ```javascript
-try {
-  const result = await uuics.execute({
-    action: 'click',
-    target: '#submit-btn'
-  });
-  
-  if (result.success) {
-    console.log('Action completed:', result.message);
-  } else {
-    console.error('Action failed:', result.error);
-  }
-} catch (error) {
-  console.error('Execution error:', error);
-}
+const results = await uuics.executeBatch([
+  { action: 'click', target: '#menu' },
+  { action: 'click', target: '#settings' },
+  { action: 'setValue', target: '#theme', parameters: { value: 'dark' } },
+  { action: 'click', target: '#save' }
+]);
+
+const allSucceeded = results.every(r => r.success);
 ```
 
-## Browser Compatibility
+### Custom Actions
+
+```javascript
+await uuics.execute({
+  action: 'custom',
+  target: '#my-element',
+  script: `
+    element.scrollIntoView({ behavior: 'smooth' });
+    element.classList.add('highlighted');
+  `
+});
+```
+
+### Context Subscription
+
+```javascript
+const unsubscribe = uuics.subscribe((context) => {
+  console.log('Page updated!');
+  console.log('Elements:', context.elements.length);
+  console.log('Actions:', context.actions.length);
+});
+
+// Later...
+unsubscribe();
+```
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      UUICSEngine                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │ DOMScanner  │  │StateTracker │  │ MutationTracker     │  │
+│  │             │  │             │  │                     │  │
+│  │ - Traverse  │  │ - Proxy     │  │ - MutationObserver  │  │
+│  │ - Detect    │  │ - Register  │  │ - Event listeners   │  │
+│  │ - Classify  │  │ - Exclude   │  │ - Debouncing        │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│         │                │                    │              │
+│         └────────────────┼────────────────────┘              │
+│                          ▼                                   │
+│              ┌─────────────────────┐                         │
+│              │ ContextAggregator   │                         │
+│              │                     │                         │
+│              │ - Merge elements    │                         │
+│              │ - Generate actions  │                         │
+│              │ - Include state     │                         │
+│              └─────────────────────┘                         │
+│                          │                                   │
+│         ┌────────────────┼────────────────┐                  │
+│         ▼                ▼                ▼                  │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐      │
+│  │ Serializer  │  │ (Storage)   │  │ ActionExecutor  │      │
+│  │             │  │             │  │                 │      │
+│  │ - JSON      │  │ - Cache     │  │ - Validate      │      │
+│  │ - Natural   │  │ - History   │  │ - Execute       │      │
+│  │ - OpenAPI   │  │             │  │ - Report        │      │
+│  └─────────────┘  └─────────────┘  └─────────────────┘      │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## ⚡ Performance Tips
+
+1. **Use manual scanning**: Set `scan.interval: 0` and call `scan()` when needed
+2. **Limit depth**: Set `scan.depth` to 10-15 for most pages
+3. **Enable caching**: Keep `performance.enableCache: true`
+4. **Scope scans**: Use `rootSelectors` to scan only relevant areas
+5. **Exclude noise**: Use `excludeSelectors` to skip ads, modals, etc.
+6. **Set max elements**: Use `performance.maxElements` to prevent runaway scans
+
+## 🌐 Browser Support
 
 - Chrome/Edge: ✅ Full support
 - Firefox: ✅ Full support
 - Safari: ✅ Full support (iOS 13+)
-- Opera: ✅ Full support
 
-Requires ES6+ and modern browser features (Proxy, MutationObserver, requestIdleCallback).
+Requires: ES6+, Proxy, MutationObserver
 
-## TypeScript Support
+## 📝 TypeScript
 
-UUICS is written in TypeScript and provides comprehensive type definitions.
+Full TypeScript support with exported types:
 
 ```typescript
-import type {
-  UUICSConfig,
-  PageContext,
-  UIElement,
-  ActionCommand,
-  ActionResult
+import { 
+  UUICSEngine,
+  type UUICSConfig,
+  type PageContext,
+  type UIElement,
+  type ActionCommand,
+  type ActionResult,
+  type ElementType,
+  type ActionType
 } from '@angelerator/uuics-core';
 ```
 
-## Troubleshooting
+## 🔗 Links
 
-### High memory usage
-- Reduce `scan.depth` (default: 10)
-- Set `performance.maxElements` (default: 1000)
-- Use `excludeSelectors` to skip large sections
+- **GitHub**: [Angelerator/UUICS](https://github.com/Angelerator/UUICS)
+- **NPM**: [@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)
+- **Examples**: [examples/](../../examples/)
 
-### Slow scanning
-- Enable `performance.enableCache` (default: true)
-- Use `scan.useIdleCallback` (default: true)
-- Set appropriate `scan.interval` or use manual scanning
+## 📄 License
 
-### Missing elements
-- Check `scan.includeHidden` and `scan.includeDisabled`
-- Verify elements are within `scan.depth`
-- Check `excludeSelectors` aren't too broad
-
-### Actions not executing
-- Verify element exists: `uuics.findElement(selector)`
-- Check element is enabled: `element.enabled === true`
-- Ensure selector is correct and unique
-
-## Related Projects
-
-- [Playwright](https://playwright.dev/) - E2E testing framework
-- [Puppeteer](https://pptr.dev/) - Chrome automation
-- [Selenium](https://www.selenium.dev/) - Browser automation
-- [Anthropic Claude](https://www.anthropic.com/claude) - AI model
-- [OpenAI GPT](https://openai.com/) - AI model
-
-## Contributing
-
-Contributions welcome! See the main [README](../../README.md) for guidelines.
-
-## License
-
-MIT - see [LICENSE](../../LICENSE) file for details.
-
-## Support
-
-- Issues: [GitHub Issues](https://github.com/Angelerator/uuics/issues)
-- Docs: [Main README](../../README.md)
-- Examples: [examples/](../../examples/)
+MIT

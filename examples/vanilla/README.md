@@ -1,310 +1,400 @@
 # UUICS Vanilla JavaScript Example
 
-Comprehensive demonstration of all UUICS features using vanilla JavaScript.
+A comprehensive demonstration of UUICS using vanilla JavaScript. This example showcases all core features without any framework dependencies.
 
-## Overview
+## 🎯 What This Example Shows
 
-This example showcases every major feature of UUICS in a single interactive page:
+- **Direct Engine Usage**: Using UUICSEngine without frameworks
+- **DOM Scanning**: How elements are detected and categorized
+- **Context Serialization**: All three output formats (JSON, Natural, OpenAPI)
+- **Action Execution**: Executing actions on page elements
+- **State Tracking**: Both proxy-based and manual state registration
+- **Scope Control**: Include/exclude selectors for targeted scanning
+- **Special Elements**: ARIA roles, contenteditable, progress, meter, etc.
 
-- ✅ State Tracking (proxy-based and manual)
-- ✅ Scope Control (root and exclude selectors)
-- ✅ Special Elements (ARIA, contenteditable, progress, meter, etc.)
-- ✅ Dropdown Options Extraction
-- ✅ All Serialization Formats (JSON, Natural Language, OpenAPI)
-- ✅ Action Execution
-- ✅ Live Context Visualization
-
-## Features Demonstrated
-
-### 1. State Tracking
-
-**Proxy-Based Tracking:**
-- User state (name, role)
-- Credentials (username, password, API key - with exclusion)
-
-**Manual Registration:**
-- Click counters
-- Timer (elapsed seconds)
-- Application info
-
-### 2. Scope Control
-
-- Root selectors (scan specific sections)
-- Exclude selectors (skip ads, footers, etc.)
-- Global vs per-scan configuration
-
-### 3. Special Elements
-
-- ARIA roles (button, textbox, checkbox, switch)
-- Contenteditable divs
-- Progress bars and meters
-- Datalist autocomplete
-- Details/summary disclosure widgets
-- Dialog elements
-- Select elements with full option metadata
-
-### 4. Serialization Formats
-
-Switch between formats to see how context is presented:
-
-- **JSON**: Structured data for programmatic use
-- **Natural Language**: LLM-friendly text format
-- **OpenAPI**: Tool calling format for function-calling models
-
-### 5. Live Updates
-
-The context output updates in real-time as you:
-- Type in inputs
-- Click buttons
-- Change selectors
-- Modify state values
-
-## Running the Example
+## 🚀 Quick Start
 
 ```bash
-# From project root
+# From the repository root
+pnpm install
+pnpm build
+
+# Navigate to this example
 cd examples/vanilla
 
-# Install dependencies (if not already done)
-pnpm install
-
-# Start dev server
-pnpm vite
-
-# Open browser
-# Navigate to http://localhost:5173
+# Start the development server
+pnpm dev
+# Opens at http://localhost:5173
 ```
 
-## How It Works
+## 📂 Project Structure
 
-### Initialization
+```
+vanilla/
+├── index.html        # Complete single-file example
+├── package.json
+└── vite.config.js
+```
+
+The entire example is contained in a single `index.html` file for simplicity.
+
+## 🔧 How It Works
+
+### 1. Initialize UUICS
 
 ```javascript
+import { UUICSEngine } from '@angelerator/uuics-core';
+
 const uuics = new UUICSEngine({
   scan: {
-    interval: 0, // Manual scanning (on-demand)
-    depth: 10,
-    includeHidden: false,
+    interval: 0,  // Manual scanning
+    depth: 15
   },
   track: {
     mutations: true,
     clicks: true,
-    changes: true,
+    changes: true
   },
   state: {
     enabled: true,
-    exclude: ['*password*', '*key*', '*token*', '*secret*'],
-  },
-});
-```
-
-### State Tracking Setup
-
-```javascript
-// Proxy-based (automatic)
-const userState = uuics.trackState('user', {
-  name: 'John Doe',
-  role: 'Administrator',
-});
-
-// Manual registration (computed)
-uuics.registerState('counters', () => ({
-  clicks: clickCount,
-  elapsed: Math.floor((Date.now() - startTime) / 1000),
-}));
-```
-
-### Scanning with Scope Control
-
-```javascript
-// Get selectors from UI
-const rootSelectors = document.getElementById('rootSelectors').value;
-const excludeSelectors = document.getElementById('excludeSelectors').value;
-
-// Scan with configuration
-const context = await uuics.scan(undefined, {
-  rootSelectors: rootSelectors ? rootSelectors.split(',').map(s => s.trim()) : undefined,
-  excludeSelectors: excludeSelectors ? excludeSelectors.split(',').map(s => s.trim()) : undefined,
-});
-```
-
-### Format Switching
-
-```javascript
-const format = document.getElementById('formatSelect').value;
-let serialized;
-
-switch (format) {
-  case 'json':
-    serialized = JSON.stringify(uuics.serialize(context, 'json'), null, 2);
-    break;
-  case 'natural':
-    serialized = uuics.serialize(context, 'natural');
-    break;
-  case 'openapi':
-    serialized = JSON.stringify(uuics.serialize(context, 'openapi'), null, 2);
-    break;
-}
-```
-
-## Code Structure
-
-The example is contained in a single `index.html` file with:
-
-1. **HTML Structure**: Demo forms and UI elements
-2. **CSS Styling**: Clean, modern interface
-3. **JavaScript Logic**:
-   - UUICS initialization
-   - State tracking setup
-   - Event handlers
-   - Scan and display logic
-   - Real-time updates
-
-## Key Sections
-
-### State Tracking Demo
-- Input fields for proxy-based tracking
-- Buttons for manual state updates
-- Live display of current state
-
-### Scope Control Demo
-- Text inputs for root selectors
-- Text inputs for exclude selectors
-- Examples and explanations
-
-### Special Elements Demo
-- ARIA role examples
-- Contenteditable examples
-- Progress/meter examples
-- Datalist autocomplete
-- Details/summary widgets
-
-### Context Output
-- Format selector (JSON/Natural/OpenAPI)
-- Live context display
-- Syntax highlighting
-- Auto-refresh on changes
-
-## Learning Points
-
-This example teaches:
-
-1. **Manual Scanning**: When to scan (on-demand vs continuous)
-2. **State Management**: Proxy vs manual registration
-3. **Performance**: Using scope control to limit scanning
-4. **Security**: Excluding sensitive data from context
-5. **Format Selection**: Choosing the right format for your AI model
-6. **Special Elements**: Supporting modern HTML and ARIA
-7. **Real-time Updates**: Reactive context updates
-
-## Customization Ideas
-
-Extend this example:
-
-1. **Add action execution**: Execute actions from AI responses
-2. **Add AI integration**: Connect to Claude/GPT
-3. **Add recording**: Record and replay interactions
-4. **Add validation**: Validate form data before submission
-5. **Add workflows**: Multi-step action sequences
-
-## Common Use Cases
-
-### AI Form Filling
-
-```javascript
-// Get context
-const context = await uuics.scan();
-
-// Send to AI
-const aiResponse = await sendToAI(context);
-
-// Execute action
-await uuics.execute(aiResponse.command);
-```
-
-### Automated Testing
-
-```javascript
-// Record actions
-const actions = [];
-document.addEventListener('click', (e) => {
-  actions.push({
-    action: 'click',
-    target: generateSelector(e.target),
-  });
-});
-
-// Replay actions
-for (const action of actions) {
-  await uuics.execute(action);
-  await new Promise(r => setTimeout(r, 100));
-}
-```
-
-### Accessibility Assistant
-
-```javascript
-// Scan with accessibility focus
-const context = await uuics.scan(undefined, {
-  includeDisabled: true,
-  includeHidden: true,
-});
-
-// Check for issues
-const issues = [];
-context.elements.forEach(el => {
-  if (el.type === 'button' && !el.label) {
-    issues.push(`Button without label: ${el.selector}`);
+    exclude: ['*password*', '*token*', '*key*']
   }
 });
+
+await uuics.initialize();
 ```
 
-## Performance Tips
+### 2. Scan the Page
 
-1. **Manual Scanning**: Set `interval: 0` for on-demand scanning
-2. **Scope Control**: Use `rootSelectors` to focus on relevant areas
-3. **Exclusions**: Skip ads, navigation, footers with `excludeSelectors`
-4. **Depth Limiting**: Set appropriate `depth` for your page
-5. **Caching**: Keep `enableCache: true` (default)
+```javascript
+// Full page scan
+const context = await uuics.scan();
 
-## Browser DevTools
+// Scoped scan
+const scopedContext = await uuics.scan(null, {
+  rootSelectors: ['#main-form'],
+  excludeSelectors: ['.tooltip']
+});
+```
 
-Open DevTools to see:
-- Console logs for scan timing
-- Network tab for performance
-- Elements tab to inspect structure
+### 3. Serialize Context
 
-## Troubleshooting
+```javascript
+// Natural language (best for AI)
+const natural = uuics.serialize('natural');
 
-**Context is empty:**
-- Check root selectors are valid
-- Verify elements aren't excluded
-- Check depth limit
+// JSON (structured data)
+const json = uuics.serialize('json');
 
-**State not updating:**
-- Verify state tracking is enabled
-- Check exclusion patterns
-- Call `refreshStateDisplay()` after changes
+// OpenAPI (function calling)
+const openapi = uuics.serialize('openapi');
+```
 
-**Slow performance:**
-- Reduce scan depth
-- Use more specific root selectors
-- Enable caching
+### 4. Execute Actions
 
-## Next Steps
+```javascript
+// Click a button
+await uuics.execute({
+  action: 'click',
+  target: '#submit-btn'
+});
 
-After exploring this example:
+// Set input value
+await uuics.execute({
+  action: 'setValue',
+  target: '#email',
+  parameters: { value: 'user@example.com' }
+});
 
-1. Try the [React example](../react-app/) for framework integration
-2. Read the [Core API docs](../../packages/core/README.md)
-3. Explore [model adapters](../../packages/models-claude/README.md)
-4. Build your own AI-powered application!
+// Select dropdown option
+await uuics.execute({
+  action: 'select',
+  target: '#country',
+  parameters: { value: 'us' }
+});
 
-## Contributing
+// Multi-select
+await uuics.execute({
+  action: 'select',
+  target: '#skills',
+  parameters: { value: ['js', 'python', 'rust'] }
+});
 
-Found a bug or have an improvement? See [Contributing Guide](../../README.md#contributing).
+// Check/uncheck
+await uuics.execute({ action: 'check', target: '#newsletter' });
+await uuics.execute({ action: 'uncheck', target: '#marketing' });
+```
 
-## License
+### 5. Track State
 
-MIT - see [LICENSE](../../LICENSE)
+```javascript
+// Proxy-based tracking (automatic updates)
+const appState = uuics.trackState('app', {
+  user: { name: 'John', role: 'admin' },
+  settings: { theme: 'dark' }
+});
 
+// Changes are automatically tracked
+appState.user.name = 'Jane';
+appState.settings.theme = 'light';
+
+// Manual registration (computed values)
+let clickCount = 0;
+uuics.registerState('metrics', () => ({
+  clicks: clickCount,
+  timestamp: Date.now()
+}));
+
+// Increment on clicks
+document.addEventListener('click', () => clickCount++);
+```
+
+## 🎨 UI Sections in the Example
+
+### Standard Form Elements
+- Text inputs (name, email, phone)
+- Number input with constraints
+- URL input
+- Textarea for long text
+
+### Selection Controls
+- Single-select dropdown (country)
+- Role dropdown with options
+- Multi-select dropdown (skills)
+
+### Checkboxes & Radio Buttons
+- Interest checkboxes (coding, design, data, mobile)
+- Preference checkboxes (newsletter, notifications, marketing)
+- Experience level radio buttons
+- Work mode radio buttons
+
+### Special HTML Elements
+- Progress bar
+- Meter element
+- Input with datalist (autocomplete)
+- Contenteditable div
+- Details/summary accordion
+- Dialog modal
+
+### ARIA Roles
+- Custom button (`role="button"`)
+- Custom checkbox (`role="checkbox"`)
+- Custom switch (`role="switch"`)
+- Custom textbox (`role="textbox"`)
+
+### Action Buttons
+- Save, Submit, Delete, Cancel buttons
+- Each with different styling
+
+## 📊 Output Formats
+
+### Natural Language Output
+
+```
+# Page Context
+
+Page: UUICS Vanilla Example
+URL: http://localhost:5173/
+
+## Summary
+Total Actionable Elements: 35
+Available Actions: 52
+
+## Interactive Elements
+
+### Inputs (8)
+- **Full Name (#name)** → `#name`
+- **Email Address (#email)** → `#email`
+...
+
+### Selects (3)
+- **Country (#country)** [OPTIONS: "USA" (value: us), "UK" (value: uk)...] → `#country`
+...
+
+### Buttons (4)
+- **💾 Save Changes (#save-btn)** → `#save-btn`
+...
+
+## Application State
+
+### app
+{
+  "user": { "name": "John", "role": "admin" },
+  "settings": { "theme": "dark" }
+}
+```
+
+### JSON Output
+
+```json
+{
+  "id": "context-abc123",
+  "timestamp": 1702900000000,
+  "url": "http://localhost:5173/",
+  "title": "UUICS Vanilla Example",
+  "elements": [
+    {
+      "type": "input",
+      "selector": "#name",
+      "label": "Full Name",
+      "value": "",
+      "visible": true,
+      "enabled": true
+    }
+  ],
+  "actions": [
+    { "type": "setValue", "target": "#name", "description": "Set value Full Name" }
+  ],
+  "state": {
+    "app": { "user": { "name": "John" } }
+  }
+}
+```
+
+### OpenAPI Output
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": { "title": "UI Context", "version": "1.0.0" },
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "ui_setValue",
+        "description": "Set value in an input field",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "enum": ["#name", "#email", "#phone"]
+            },
+            "value": { "type": "string" }
+          },
+          "required": ["target", "value"]
+        }
+      }
+    }
+  ]
+}
+```
+
+## 🤖 Claude Integration
+
+The example includes an integrated Claude chat. To use it:
+
+1. Start the Claude CLI proxy (from the react-app example):
+   ```bash
+   cd ../react-app
+   node claude-cli-proxy.cjs
+   ```
+
+2. Click the 🤖 button in the example
+3. Start chatting with Claude about the page
+
+The Claude adapter is inlined directly in the HTML for simplicity.
+
+## 🔬 Experimenting
+
+### Console Access
+
+The UUICS engine is available globally:
+
+```javascript
+// In browser console:
+window.uuics
+
+// Scan the page
+await uuics.scan()
+
+// Get context
+uuics.getContext()
+
+// Execute action
+await uuics.execute({ action: 'click', target: '#save-btn' })
+
+// Serialize
+uuics.serialize('natural')
+```
+
+### Testing Scope Control
+
+```javascript
+// Scan only the form section
+await uuics.scan(null, {
+  rootSelectors: ['#main-form']
+});
+
+// Exclude certain elements
+await uuics.scan(null, {
+  excludeSelectors: ['.skip-this', '#advertisement']
+});
+```
+
+### Testing State Tracking
+
+```javascript
+// Track a new object
+const cart = uuics.trackState('cart', {
+  items: [],
+  total: 0
+});
+
+// Modify it
+cart.items.push({ id: 1, name: 'Product' });
+cart.total = 29.99;
+
+// Check in context
+const ctx = await uuics.scan();
+console.log(ctx.state.cart);
+```
+
+## 🐛 Debugging Tips
+
+### Element Not Found
+```javascript
+// Check if element exists
+const el = uuics.findElement('#my-selector');
+console.log(el);  // null if not found
+```
+
+### Action Failed
+```javascript
+const result = await uuics.execute({ action: 'click', target: '#btn' });
+if (!result.success) {
+  console.error(result.error);
+}
+```
+
+### State Not Appearing
+```javascript
+// Check tracked state names
+console.log(uuics.getTrackedStateNames());
+
+// Verify state is enabled in config
+console.log(uuics.config.state.enabled);
+```
+
+## 📝 Code Walkthrough
+
+The `index.html` file is organized into sections:
+
+1. **Styles** (lines 1-500): Tailwind-like utility classes
+2. **HTML Structure** (lines 500-1200): Demo form elements
+3. **JavaScript** (lines 1200-end):
+   - UUICS initialization
+   - Event handlers for buttons
+   - State tracking setup
+   - Claude adapter (inlined)
+   - Chat functionality
+
+## 🔗 Related
+
+- [Main README](../../README.md) - Project overview
+- [Core Package](../../packages/core/README.md) - API documentation
+- [React Example](../react-app/README.md) - React integration
+
+## 📄 License
+
+MIT - Part of the UUICS project.

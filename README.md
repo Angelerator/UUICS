@@ -5,394 +5,370 @@
 [![license](https://img.shields.io/npm/l/@angelerator/uuics-core.svg)](https://github.com/Angelerator/UUICS/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/Angelerator/UUICS.svg?style=social)](https://github.com/Angelerator/UUICS)
 
-A performance-optimized, framework-agnostic system for AI agents to understand and interact with web interfaces.
+**A performance-optimized, framework-agnostic system for AI agents to understand and interact with web interfaces.**
 
-## Features
+UUICS bridges the gap between AI models and web UIs by providing structured context about page elements and enabling AI-driven interactions through a simple action execution system.
+
+## 🎯 What is UUICS?
+
+UUICS scans your web page, extracts all interactive elements (buttons, inputs, dropdowns, etc.), and provides this information in AI-friendly formats. When an AI decides to take action, UUICS executes it safely on the page.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         HOW UUICS WORKS                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   Your Web Page          UUICS Engine            AI Model                    │
+│   ┌──────────┐          ┌──────────┐          ┌──────────┐                  │
+│   │ Buttons  │ ──scan──▶│ Context  │ ──send──▶│ Analyze  │                  │
+│   │ Inputs   │          │ Builder  │          │ & Decide │                  │
+│   │ Forms    │          └──────────┘          └──────────┘                  │
+│   │ Dropdowns│                                     │                        │
+│   └──────────┘                                     │                        │
+│        ▲                                           │                        │
+│        │               ┌──────────┐                │                        │
+│        └──execute──────│ Action   │◀───command─────┘                        │
+│                        │ Executor │                                          │
+│                        └──────────┘                                          │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## ✨ Features
 
 ### Core Capabilities
+- **🔍 DOM Scanning**: Automatically detects all interactive elements
+- **📝 Context Serialization**: JSON, Natural Language, or OpenAPI formats
+- **⚡ Action Execution**: Click, type, select, check, and more
+- **🔄 State Tracking**: Track JavaScript variables alongside DOM state
+- **🛡️ Sensitive Data Protection**: Automatically exclude passwords and tokens
 
-- **Framework Agnostic**: Works with vanilla JS, React, Vue, and any other framework
-- **Model Agnostic**: Provides structured context that works with any LLM (Claude, GPT, etc.)
-- **Performance Optimized**: Smart caching, debounced mutations, idle callbacks
-- **Type Safe**: Full TypeScript support with comprehensive type definitions
-- **Modular**: Use only what you need - core, React hooks, or specific model adapters
+### Framework Support
+- **Vanilla JavaScript**: Direct engine usage
+- **React**: Provider pattern with hooks (see examples)
+- **Vue, Angular, etc.**: Engine works with any framework
 
-### Advanced Features
+### AI Model Support
+- **Claude**: Full support with natural language context
+- **GPT-4/OpenAI**: Function calling with OpenAPI format
+- **Any LLM**: JSON format works universally
 
-- **State Tracking**: Track JavaScript variables and application state with proxy-based or manual registration
-- **Scope Control**: Scan specific DOM subtrees with include/exclude selectors
-- **Special Elements**: Full support for ARIA roles, contenteditable, progress, meter, datalist, and more
-- **Action Chaining**: Execute sequential or conditional action workflows
-- **Sensitive Data Protection**: Pattern-based exclusion filters for passwords, tokens, and secrets
-- **Multiple Output Formats**: JSON, Natural Language, and OpenAPI tool definitions
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    UNIVERSAL UI CONTEXT SYSTEM                           │
-├─────────────────────────────────────────────────────────────────────────┤
-│  DOM Scanner + State Tracker → Mutation Tracker → Context Aggregator     │
-│       ↓              ↓                  ↓                    ↓            │
-│  Element        JS Variables      Change Events      Structured Context  │
-│  Detection      & App State                                 ↓            │
-│                                                       Serializer          │
-│                                                  (JSON/Natural/OpenAPI)   │
-│                                                           ↓               │
-│                                                    To AI Model            │
-│                                                           ↓               │
-│                                                   Action Commands         │
-│                                                           ↓               │
-│                                                   Action Executor         │
-│                                                    (Batch Support)        │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
-## Packages
-
-### Core Packages
-
-- **[@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)**: Core runtime engine (DOM scanning, tracking, serialization, execution)
-- **[@angelerator/uuics-react](https://www.npmjs.com/package/@angelerator/uuics-react)**: React hooks and components
-
-### Model Adapters (Examples)
-
-- **[@angelerator/uuics-models-claude](https://www.npmjs.com/package/@angelerator/uuics-models-claude)**: Claude AI integration example
-- **[@angelerator/uuics-models-openai](https://www.npmjs.com/package/@angelerator/uuics-models-openai)**: OpenAI GPT integration example
-
-## Installation
+## 📦 Installation
 
 ```bash
-# Core package only
 npm install @angelerator/uuics-core
-
-# With React hooks and components
-npm install @angelerator/uuics-core @angelerator/uuics-react
-
-# With AI model adapters
-npm install @angelerator/uuics-core @angelerator/uuics-models-claude
-npm install @angelerator/uuics-core @angelerator/uuics-models-openai
-
-# Everything together
-npm install @angelerator/uuics-core @angelerator/uuics-react @angelerator/uuics-models-claude @angelerator/uuics-models-openai
-
-# Using pnpm
-pnpm add @angelerator/uuics-core @angelerator/uuics-react
-
-# Using yarn
-yarn add @angelerator/uuics-core @angelerator/uuics-react
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-### Vanilla JavaScript
+### Basic Usage
 
 ```javascript
-import { UUICSEngine } from "@angelerator/uuics-core";
+import { UUICSEngine } from '@angelerator/uuics-core';
 
-// Create engine with state tracking
+// Create engine
 const uuics = new UUICSEngine({
-  scan: {
-    interval: 0, // Manual scanning (recommended for AI integration)
-    depth: 10,
-    rootSelectors: ["#main-content"], // Scan specific areas
-    excludeSelectors: [".ads", "footer"], // Skip certain elements
-  },
-  track: {
-    mutations: true,
-    clicks: true,
-    changes: true,
-  },
-  state: {
-    enabled: true, // Enable state tracking
-    exclude: ["*password*", "*token*", "*key*"], // Protect sensitive data
-  },
+  scan: { interval: 0 },  // Manual scanning
+  track: { mutations: true, clicks: true }
 });
 
-// Track application state
-const user = uuics.trackState("user", { name: "John", role: "admin" });
+// Initialize
+await uuics.initialize();
 
-// Register computed state
-uuics.registerState("appInfo", () => ({
-  timestamp: Date.now(),
-  version: "1.0.0",
-}));
-
-// Scan and get context
+// Scan the page
 const context = await uuics.scan();
 
-// Serialize for AI (includes state)
-const naturalLanguage = uuics.serialize(context, "natural");
+// Get AI-friendly context
+const naturalLanguage = uuics.serialize('natural');
 console.log(naturalLanguage);
+// Output:
+// # Page Context
+// ## Interactive Elements
+// ### Buttons (3)
+// - **Submit** → `#submit-btn`
+// - **Cancel** → `#cancel-btn`
+// ...
 
-// Execute single action
+// Execute an action from AI response
 await uuics.execute({
-  action: "setValue",
-  target: "#name-input",
-  parameters: { value: "John Doe" },
+  action: 'setValue',
+  target: '#email',
+  parameters: { value: 'user@example.com' }
+});
+```
+
+### With Claude AI
+
+```javascript
+import { UUICSEngine } from '@angelerator/uuics-core';
+
+const uuics = new UUICSEngine();
+await uuics.initialize();
+
+// Get page context
+await uuics.scan();
+const context = uuics.serialize('natural');
+
+// Send to Claude (using your preferred method)
+const response = await claude.messages.create({
+  model: 'claude-sonnet-4-20250514',
+  system: `You are a web automation assistant. Here's the page context:\n${context}`,
+  messages: [{ role: 'user', content: 'Fill in the email field with test@example.com' }]
 });
 
-// Execute action chain
-await uuics.executeBatch([
-  { action: "click", target: "#menu" },
-  { action: "click", target: "#profile" },
-  { action: "setValue", target: "#bio", parameters: { value: "Developer" } },
-]);
+// Parse and execute Claude's action
+const action = parseActionFromResponse(response);
+await uuics.execute(action);
 ```
 
-### React
+## 📖 API Reference
 
-```tsx
-import { UUICSProvider, useUICS, DebugPanel } from "@angelerator/uuics-react";
+### UUICSEngine
 
-function App() {
-  return (
-    <UUICSProvider config={{ scan: { interval: 2000 } }}>
-      <MyComponent />
-      <DebugPanel />
-    </UUICSProvider>
-  );
-}
+The main class for interacting with UUICS.
 
-function MyComponent() {
-  const { context, execute, serialize } = useUICS();
+#### Constructor
 
-  const handleAIAction = async () => {
-    const contextString = serialize("natural");
-    // Send to AI, get action command
-    const command = { action: "click", target: "#submit-btn" };
-    await execute(command);
-  };
-
-  return <div>Elements: {context?.elements.length}</div>;
-}
+```typescript
+new UUICSEngine(config?: UUICSConfig)
 ```
 
-## Configuration
+#### Core Methods
+
+| Method | Description |
+|--------|-------------|
+| `initialize()` | Initialize the engine |
+| `scan(root?, config?)` | Scan DOM and update context |
+| `getContext()` | Get current page context |
+| `serialize(format?)` | Serialize context (json/natural/openapi) |
+| `subscribe(callback)` | Subscribe to context updates |
+
+#### Action Methods
+
+| Method | Description |
+|--------|-------------|
+| `execute(command)` | Execute a single action |
+| `executeBatch(commands)` | Execute multiple actions sequentially |
+
+#### State Tracking
+
+| Method | Description |
+|--------|-------------|
+| `trackState(name, obj)` | Track object with auto-updates |
+| `registerState(name, getter)` | Register computed state |
+| `untrackState(name)` | Stop tracking an object |
+
+### Action Types
+
+```typescript
+type ActionType = 
+  | 'click'      // Click an element
+  | 'setValue'   // Set input/textarea value
+  | 'select'     // Select dropdown option(s)
+  | 'check'      // Check a checkbox
+  | 'uncheck'    // Uncheck a checkbox
+  | 'submit'     // Submit a form
+  | 'focus'      // Focus an element
+  | 'scroll'     // Scroll to element
+  | 'hover'      // Hover over element
+  | 'custom';    // Execute custom script
+```
+
+### Configuration
 
 ```typescript
 const config: UUICSConfig = {
   scan: {
-    interval: 0, // Auto-scan interval (0 = manual)
-    depth: 10, // Max DOM depth
-    includeHidden: false, // Include hidden elements
-    includeDisabled: false, // Include disabled elements
-    rootSelectors: ["#app", ".main"], // Scan only specific areas
-    excludeSelectors: [".ads", "nav"], // Skip certain elements
-    useIdleCallback: true, // Use requestIdleCallback
+    interval: 0,              // Auto-scan interval (0 = manual)
+    depth: 10,                // Max DOM depth
+    includeHidden: false,     // Include hidden elements
+    rootSelectors: ['#app'],  // Scan specific areas only
+    excludeSelectors: ['.ads'] // Skip certain elements
   },
   track: {
-    mutations: true, // Track DOM mutations
-    clicks: true, // Track click events
-    changes: true, // Track input changes
-    submits: true, // Track form submissions
-    debounceDelay: 100, // Debounce delay (ms)
-  },
-  serialize: {
-    format: "json", // Default format
-    includeMetadata: true, // Include scan metadata
-    pretty: false, // Pretty-print JSON
-    includeBounds: false, // Include element bounds
-  },
-  performance: {
-    enableCache: true, // Enable element caching
-    cacheTTL: 5000, // Cache TTL (ms)
-    maxElements: 1000, // Max elements to scan
-    useWorker: false, // Use Web Worker
-  },
-  debug: {
-    enabled: false, // Enable debug logging
-    level: "info", // Log level
+    mutations: true,          // Track DOM mutations
+    clicks: true,             // Track click events
+    changes: true,            // Track input changes
+    debounceDelay: 100        // Debounce delay (ms)
   },
   state: {
-    enabled: true, // Enable state tracking
-    exclude: ["*password*", "*token*", "*key*"], // Exclude patterns
-    track: { user: { name: "John" } }, // Auto-track objects
-    capture: () => ({ custom: "data" }), // Custom capture function
+    enabled: true,            // Enable state tracking
+    exclude: ['*password*']   // Exclude sensitive fields
   },
+  performance: {
+    enableCache: true,        // Cache scanned elements
+    maxElements: 1000         // Max elements to scan
+  }
 };
 ```
 
-## API Reference
+## 🎨 Serialization Formats
 
-### UUICSEngine
-
-#### Core Methods
-
-- `initialize(): Promise<void>` - Initialize the engine
-- `scan(root?: HTMLElement, configOverride?: Partial<ScanConfig>): Promise<PageContext>` - Scan DOM and update context
-- `getContext(): PageContext | null` - Get current context
-- `subscribe(callback: (context: PageContext) => void): () => void` - Subscribe to updates
-- `serialize(context: PageContext, format?: 'json' | 'natural' | 'openapi'): string | object` - Serialize context
-
-#### Action Methods
-
-- `execute(command: ActionCommand): Promise<ActionResult>` - Execute single action
-- `executeBatch(commands: ActionCommand[]): Promise<ActionResult[]>` - Execute multiple actions sequentially
-
-#### State Tracking Methods
-
-- `trackState<T>(name: string, obj: T): T` - Track object with proxy (automatic)
-- `registerState(name: string, getter: () => any): void` - Register state getter (manual)
-- `untrackState(name: string): void` - Remove tracked object
-- `unregisterState(name: string): void` - Remove registered getter
-- `getTrackedStateNames(): string[]` - Get list of tracked state names
-
-#### Utility Methods
-
-- `findElement(selector: string): UIElement | null` - Find element by selector
-- `findElements(type: string): UIElement[]` - Find elements by type
-- `updateConfig(config: Partial<UUICSConfig>): void` - Update configuration
-- `clearCache(): void` - Clear element cache
-- `destroy(): void` - Cleanup and destroy
-
-### Action Commands
-
-```typescript
-interface ActionCommand {
-  action:
-    | "click"
-    | "setValue"
-    | "submit"
-    | "select"
-    | "check"
-    | "uncheck"
-    | "focus"
-    | "scroll"
-    | "hover"
-    | "custom";
-  target: string; // CSS selector
-  parameters?: {
-    value?: any; // For setValue, select
-  };
-  script?: string; // For custom actions
-}
-```
-
-## Serialization Formats
-
-### JSON
-
-Structured data format with all context information:
-
-```json
-{
-  "id": "context-123",
-  "timestamp": 1234567890,
-  "url": "https://example.com",
-  "title": "Example Page",
-  "elements": [...],
-  "actions": [...],
-  "forms": [...]
-}
-```
-
-### Natural Language
-
-LLM-friendly text format:
+### Natural Language (AI-Friendly)
 
 ```
 # Page Context
 
-Page: Example Page
+Page: My Application
 URL: https://example.com
-Timestamp: 2024-01-01T00:00:00.000Z
-
-## Summary
-
-Total Elements: 25
-Available Actions: 12
 
 ## Interactive Elements
 
-### Buttons (5)
+### Inputs (3)
+- **Email** → `#email` 
+- **Password** → `#password`
+- **Name** → `#name`
 
-- **Submit Form** → `#submit-btn`
-- **Clear** → `#clear-btn`
-...
+### Buttons (2)
+- **Submit** → `#submit-btn`
+- **Cancel** → `#cancel-btn`
+
+### Selects (1)
+- **Country** [OPTIONS: "USA" (value: us), "UK" (value: uk)] → `#country`
+
+## Application State
+- user: { name: "John", loggedIn: true }
 ```
 
-### OpenAPI
-
-Tool calling format for function-calling LLMs:
+### JSON (Structured)
 
 ```json
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "UI Context: Example Page",
-    "version": "1.0.0"
-  },
+  "url": "https://example.com",
+  "title": "My Application",
+  "elements": [
+    {
+      "type": "input",
+      "selector": "#email",
+      "label": "Email",
+      "value": ""
+    }
+  ],
+  "actions": [
+    { "type": "setValue", "target": "#email" },
+    { "type": "click", "target": "#submit-btn" }
+  ],
+  "state": {
+    "user": { "name": "John" }
+  }
+}
+```
+
+### OpenAPI (Function Calling)
+
+```json
+{
   "tools": [
     {
       "type": "function",
       "function": {
         "name": "ui_click",
-        "description": "Perform click action on a UI element",
         "parameters": {
-          "type": "object",
           "properties": {
-            "target": {
-              "type": "string",
-              "enum": ["#submit-btn", "#clear-btn"]
-            }
+            "target": { "enum": ["#submit-btn", "#cancel-btn"] }
           }
         }
       }
     }
-  ],
-  "context": {
-    "state": {
-      "user": { "name": "John", "role": "admin" },
-      "counters": { "clicks": 42 }
-    }
-  }
+  ]
 }
 ```
 
-## State Tracking
+## 📂 Project Structure
 
-Track JavaScript variables and application state to provide complete context to AI models.
-
-### Proxy-Based Tracking (Automatic)
-
-```javascript
-// Track an object - changes are automatically captured
-const userState = uuics.trackState("user", {
-  name: "John Doe",
-  email: "john@example.com",
-  preferences: { theme: "dark" },
-});
-
-// Use like a normal object
-userState.name = "Jane Doe";
-userState.preferences.theme = "light";
-
-// State is included in the next scan
-const context = await uuics.scan();
-console.log(context.state.user);
-// { name: 'Jane Doe', email: 'john@example.com', preferences: { theme: 'light' } }
+```
+uuics/
+├── packages/
+│   └── core/                 # @angelerator/uuics-core
+│       ├── src/
+│       │   ├── scanner/      # DOM scanning
+│       │   ├── tracker/      # Mutation & state tracking
+│       │   ├── aggregator/   # Context aggregation
+│       │   ├── serializer/   # Output formatting
+│       │   ├── executor/     # Action execution
+│       │   └── UUICSEngine.ts
+│       └── package.json
+│
+└── examples/
+    ├── react-app/            # React + Claude integration
+    │   ├── src/
+    │   │   ├── UUICSProvider.tsx  # React context
+    │   │   ├── ClaudeAdapter.ts   # Claude integration
+    │   │   └── ...
+    │   └── claude-cli-proxy.cjs   # Proxy for Claude Code
+    │
+    └── vanilla/              # Vanilla JavaScript example
+        └── index.html
 ```
 
-### Manual Registration (Computed Values)
+## 🏃 Running Examples
+
+### Prerequisites
+
+```bash
+# Clone the repository
+git clone https://github.com/Angelerator/UUICS.git
+cd UUICS
+
+# Install dependencies
+pnpm install
+
+# Build packages
+pnpm build
+```
+
+### React Example with Claude
+
+```bash
+# Terminal 1: Start the React app
+cd examples/react-app
+pnpm dev
+# Opens at http://localhost:5173
+
+# Terminal 2: Start Claude proxy (uses Claude Code subscription)
+cd examples/react-app
+node claude-cli-proxy.cjs
+# Proxy runs at http://localhost:3100
+```
+
+Then open the app and click the 🤖 button to chat with Claude!
+
+### Vanilla Example
+
+```bash
+cd examples/vanilla
+pnpm dev
+# Opens at http://localhost:5173
+```
+
+## 🔧 Advanced Usage
+
+### State Tracking
 
 ```javascript
-let clickCount = 0;
-let startTime = Date.now();
+// Track objects with automatic change detection
+const user = uuics.trackState('user', {
+  name: 'John',
+  preferences: { theme: 'dark' }
+});
 
-// Register getter functions evaluated on-demand
-uuics.registerState("counters", () => ({
-  clicks: clickCount,
-  elapsed: Date.now() - startTime,
+user.name = 'Jane';  // Automatically tracked!
+
+// Register computed values
+uuics.registerState('metrics', () => ({
+  pageViews: analytics.getPageViews(),
+  sessionDuration: Date.now() - startTime
 }));
+```
 
-uuics.registerState("computed", () => ({
-  averageClickRate: clickCount / ((Date.now() - startTime) / 1000),
-}));
+### Scope Control
 
-// State is evaluated during scan
-const context = await uuics.scan();
-console.log(context.state.counters); // { clicks: 42, elapsed: 15234 }
+```javascript
+// Scan only specific areas
+await uuics.scan(null, {
+  rootSelectors: ['#main-form', '#sidebar'],
+  excludeSelectors: ['.advertisement', 'footer']
+});
 ```
 
 ### Sensitive Data Protection
@@ -401,316 +377,67 @@ console.log(context.state.counters); // { clicks: 42, elapsed: 15234 }
 const uuics = new UUICSEngine({
   state: {
     enabled: true,
-    exclude: [
-      "*password*", // Matches: password, userPassword, etc.
-      "*token*", // Matches: authToken, apiToken, etc.
-      "*key*", // Matches: apiKey, secretKey, etc.
-    ],
-  },
+    exclude: ['*password*', '*token*', '*secret*', '*key*']
+  }
 });
 
-const auth = uuics.trackState("auth", {
-  username: "john",
-  password: "secret123", // Will be excluded
-  apiKey: "sk-abc123", // Will be excluded
-  publicData: "safe info", // Will be included
+// Sensitive fields automatically excluded from context
+const auth = uuics.trackState('auth', {
+  username: 'john',      // ✅ Included
+  password: 'secret123', // ❌ Excluded as '[EXCLUDED]'
+  apiKey: 'sk-abc123'    // ❌ Excluded as '[EXCLUDED]'
 });
-
-const context = await uuics.scan();
-console.log(context.state.auth);
-// { username: 'john', password: '[EXCLUDED]', apiKey: '[EXCLUDED]', publicData: 'safe info' }
 ```
 
-## Scope Control
-
-Control which parts of the DOM are scanned for optimal performance and relevance.
-
-### Root Selectors (Include)
+### Action Chaining
 
 ```javascript
-// Scan only specific areas
-const context = await uuics.scan(undefined, {
-  rootSelectors: ["#main-content", ".sidebar"],
-});
-
-// Or configure globally
-const uuics = new UUICSEngine({
-  scan: {
-    rootSelectors: ["#app", "main"],
-  },
-});
-```
-
-### Exclude Selectors
-
-```javascript
-// Skip ads, navigation, footer, etc.
-const context = await uuics.scan(undefined, {
-  excludeSelectors: [".ads", "nav", "footer", "#cookie-banner"],
-});
-
-// Combine with root selectors
-const context = await uuics.scan(undefined, {
-  rootSelectors: ["#main-form"],
-  excludeSelectors: [".help-text", ".tooltip"],
-});
-```
-
-## Special Elements Support
-
-UUICS comprehensively supports modern HTML elements and ARIA roles:
-
-### ARIA Roles
-
-```html
-<!-- Automatically detected and typed correctly -->
-<div role="button">Custom Button</div>
-<div role="textbox" contenteditable>Custom Input</div>
-<div role="checkbox" aria-checked="true">Custom Checkbox</div>
-<div role="switch" aria-checked="false">Toggle</div>
-```
-
-### Special HTML Elements
-
-```html
-<!-- Progress and Meter -->
-<progress value="70" max="100">70%</progress>
-<meter value="0.7" min="0" max="1">70%</meter>
-
-<!-- Datalist (Autocomplete) -->
-<input list="browsers" />
-<datalist id="browsers">
-  <option value="Chrome"></option>
-  <option value="Firefox"></option>
-</datalist>
-
-<!-- Contenteditable -->
-<div contenteditable="true">Editable content</div>
-
-<!-- Details/Summary -->
-<details>
-  <summary>Click to expand</summary>
-  <p>Hidden content</p>
-</details>
-
-<!-- Dialog -->
-<dialog open>
-  <p>Modal content</p>
-</dialog>
-```
-
-### Dropdown Options
-
-Select elements include complete option metadata:
-
-```javascript
-const context = await uuics.scan();
-const selectElement = context.elements.find((el) => el.type === "select");
-
-console.log(selectElement.selectMetadata);
-// {
-//   options: [
-//     { value: 'us', label: 'United States', selected: false, disabled: false },
-//     { value: 'uk', label: 'United Kingdom', selected: true, disabled: false }
-//   ],
-//   multiple: false,
-//   selectedValues: ['uk']
-// }
-```
-
-## Action Chaining
-
-Execute complex workflows with sequential or conditional actions.
-
-### Batch Execution
-
-```javascript
-// Execute actions sequentially with automatic error handling
+// Execute multiple actions in sequence
 const results = await uuics.executeBatch([
-  { action: "click", target: "#login-button" },
-  { action: "setValue", target: "#username", parameters: { value: "john" } },
-  { action: "setValue", target: "#password", parameters: { value: "secret" } },
-  { action: "submit", target: "#login-form" },
+  { action: 'click', target: '#menu-button' },
+  { action: 'click', target: '#settings' },
+  { action: 'setValue', target: '#theme', parameters: { value: 'dark' } },
+  { action: 'click', target: '#save' }
 ]);
 
-// Check results
-results.forEach((result, i) => {
-  console.log(`Step ${i + 1}: ${result.success ? "✓" : "✗"}`);
+results.forEach((r, i) => {
+  console.log(`Step ${i + 1}: ${r.success ? '✓' : '✗'} ${r.message}`);
 });
 ```
 
-### Conditional Chains
+## 🤖 Use Cases
 
-```javascript
-// Manual chaining with custom logic
-let result = await uuics.execute({ action: "click", target: "#menu" });
-
-if (result.success) {
-  result = await uuics.execute({ action: "click", target: "#submenu" });
-}
-
-if (result.success) {
-  await uuics.execute({
-    action: "setValue",
-    target: "#search",
-    parameters: { value: "query" },
-  });
-}
-```
-
-### State-Aware Workflows
-
-```javascript
-// Track workflow progress
-const workflow = uuics.trackState("workflow", {
-  step: 0,
-  completed: [],
-});
-
-async function executeStep(step, action) {
-  workflow.step = step;
-  const result = await uuics.execute(action);
-  if (result.success) workflow.completed.push(step);
-  return result;
-}
-
-await executeStep(1, { action: "click", target: "#step1" });
-await executeStep(2, {
-  action: "fill",
-  target: "#data",
-  parameters: { value: "info" },
-});
-
-// State is included in context
-const context = await uuics.scan();
-console.log(context.state.workflow); // { step: 2, completed: [1, 2] }
-```
-
-## Performance
-
-UUICS is designed for performance-critical applications:
-
-- **Smart Caching**: Elements are cached and only re-scanned on changes
-- **Debounced Mutations**: Change events are batched to avoid excessive scanning
-- **Idle Callbacks**: Non-urgent scans use `requestIdleCallback`
-- **Depth Limiting**: Configurable max depth to limit recursion
-- **Element Limits**: Configurable max elements to prevent memory issues
-- **Lazy Serialization**: Context is only serialized when requested
-
-## Examples
-
-See the `examples/` directory for complete examples:
-
-- `examples/vanilla/` - Comprehensive demo with all features:
-  - State tracking (proxy-based and manual registration)
-  - Scope control (root and exclude selectors)
-  - Special elements (ARIA roles, contenteditable, progress, meter, etc.)
-  - Dropdown options extraction
-  - All serialization formats
-  - Live context visualization
-- `examples/react-app/` - React application with hooks and components
-
-### Running Examples
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm build
-
-# Run vanilla example
-cd examples/vanilla
-pnpm vite
-
-# Run React example
-cd examples/react-app
-pnpm dev
-```
-
-Access at:
-
-- Vanilla: `http://localhost:5173`
-- React: `http://localhost:5174`
-
-## Development
-
-```bash
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm build
-
-# Run development mode
-pnpm dev
-
-# Run type checking
-pnpm typecheck
-
-# Clean build artifacts
-pnpm clean
-```
-
-## Use Cases
-
-UUICS is designed for:
-
-- **AI-Powered Testing**: Automated testing with natural language instructions
-- **Intelligent Automation**: Smart bots that understand page context
+- **AI-Powered Testing**: Automated testing with natural language
+- **Intelligent Automation**: Smart bots that understand page context  
 - **Accessibility Tools**: AI assistants for users with disabilities
 - **Form Auto-Fill**: Context-aware form completion
-- **Quality Assurance**: Automated UI validation and testing
-- **Browser Extensions**: AI-powered browser tools and assistants
-- **RPA (Robotic Process Automation)**: Intelligent workflow automation
+- **Browser Extensions**: AI-powered browser tools
+- **RPA**: Intelligent workflow automation
 
-## License
+## 🔄 Migrating from Previous Versions
 
-MIT
+If you were using the separate packages (`@angelerator/uuics-react`, `@angelerator/uuics-models-claude`, `@angelerator/uuics-models-openai`), these have been deprecated. The React integration and model adapters are now provided as examples that you can copy into your project.
 
-## Publishing to NPM
+See the `examples/react-app/` directory for:
+- `UUICSProvider.tsx` - React context and hooks
+- `ClaudeAdapter.ts` - Claude integration
 
-This monorepo contains multiple packages that can be published to NPM. To publish:
+## 🤝 Contributing
 
-1. Update versions in all package.json files
-2. Build all packages: `pnpm build`
-3. Publish in order:
-
-```bash
-cd packages/core && npm publish --access public
-cd ../react && npm publish --access public
-cd ../models-claude && npm publish --access public
-cd ../models-openai && npm publish --access public
-```
-
-For detailed publishing instructions, see the repository setup guide.
-
-## Contributing
-
-Contributions are welcome! To contribute:
+Contributions are welcome!
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes and test thoroughly
-4. Commit with conventional commits: `git commit -m 'feat: add amazing feature'`
-5. Push to your fork: `git push origin feature/amazing-feature`
-6. Open a Pull Request
+3. Commit changes: `git commit -m 'feat: add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
 
-### Development Guidelines
+## 📄 License
 
-- Write TypeScript with full type safety
-- Add tests for new features
-- Update documentation for API changes
-- Follow existing code style
-- Keep commits atomic and well-described
+MIT - see [LICENSE](LICENSE) for details.
 
-## Support
+## 🔗 Links
 
-For issues, questions, or feature requests:
-
-- **Issues**: Open an issue on [GitHub Issues](https://github.com/Angelerator/uuics/issues)
-- **Discussions**: Use [GitHub Discussions](https://github.com/Angelerator/uuics/discussions)
-
-## Acknowledgments
-
-UUICS is built for performance-critical applications and designed to work seamlessly with modern AI models including Claude, GPT-4, and other LLMs that support function calling and tool use.
+- **NPM**: [@angelerator/uuics-core](https://www.npmjs.com/package/@angelerator/uuics-core)
+- **GitHub**: [Angelerator/UUICS](https://github.com/Angelerator/UUICS)
+- **Issues**: [GitHub Issues](https://github.com/Angelerator/UUICS/issues)
