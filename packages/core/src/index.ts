@@ -7,6 +7,24 @@
 // Main engine
 export { UUICSEngine } from './UUICSEngine';
 
+// MCP (Model Context Protocol) support
+export { 
+  MCPToolsGenerator,
+  MCPToolHandler,
+  CORE_TOOLS,
+  DEFAULT_MCP_CONFIG,
+} from './mcp';
+
+export type {
+  MCPTool,
+  MCPToolCall,
+  MCPToolResult,
+  MCPGeneratorConfig,
+  JSONSchema,
+  JSONSchemaProperty,
+  CoreToolName,
+} from './mcp';
+
 // Types
 export type {
   // Element types
