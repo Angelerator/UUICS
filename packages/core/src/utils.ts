@@ -89,6 +89,8 @@ export function isElementVisible(element: HTMLElement): boolean {
  * Get a unique CSS selector for an element (optimized for brevity)
  */
 export function getElementSelector(element: HTMLElement): string {
+  const tag = element.tagName.toLowerCase();
+  
   // 1. If element has an ID, use it
   if (element.id) {
     return `#${CSS.escape(element.id)}`;
@@ -97,7 +99,6 @@ export function getElementSelector(element: HTMLElement): string {
   // 2. Try name attribute for form elements
   if (element.getAttribute('name')) {
     const name = element.getAttribute('name')!;
-    const tag = element.tagName.toLowerCase();
     const selector = `${tag}[name="${CSS.escape(name)}"]`;
     // Verify it's unique
     if (document.querySelectorAll(selector).length === 1) {
@@ -105,27 +106,66 @@ export function getElementSelector(element: HTMLElement): string {
     }
   }
   
-  // 3. Try type + unique class combination
-  const tag = element.tagName.toLowerCase();
+  // 3. Try aria-label (stable and semantic)
+  const ariaLabel = element.getAttribute('aria-label');
+  if (ariaLabel) {
+    const selector = `${tag}[aria-label="${CSS.escape(ariaLabel)}"]`;
+    if (document.querySelectorAll(selector).length === 1) {
+      return selector;
+    }
+  }
+  
+  // 4. Try title attribute
+  const title = element.getAttribute('title');
+  if (title) {
+    const selector = `${tag}[title="${CSS.escape(title)}"]`;
+    if (document.querySelectorAll(selector).length === 1) {
+      return selector;
+    }
+  }
+  
+  // 5. Try type + unique class combination (excluding special characters)
   if (element.className && typeof element.className === 'string') {
     const classes = element.className.split(' ').filter(c => c.trim());
     
-    // Try just the first meaningful class (not utility classes)
+    // Try just the first SAFE class (no special characters that break selectors)
     for (const cls of classes) {
-      if (!cls.match(/^(flex|grid|p-|m-|text-|bg-|border-|rounded-|w-|h-|min-|max-|gap-|space-|items-|justify-|animate-)/)) {
-        const selector = `${tag}.${CSS.escape(cls)}`;
-        const matches = document.querySelectorAll(selector);
-        if (matches.length === 1) {
-          return selector;
-        }
+      // Skip classes with special chars (: / \\) that break in serialization
+      if (cls.includes(':') || cls.includes('/') || cls.includes('\\')) {
+        continue;
+      }
+      const selector = `${tag}.${CSS.escape(cls)}`;
+      const matches = document.querySelectorAll(selector);
+      if (matches.length === 1) {
+        return selector;
       }
     }
   }
   
-  // 4. Try data attributes
-  const dataAttrs = Array.from(element.attributes).filter(attr => attr.name.startsWith('data-'));
+  // 6. Try data attributes (prefer data-testid)
+  const dataTestId = element.getAttribute('data-testid');
+  if (dataTestId) {
+    const selector = `[data-testid="${CSS.escape(dataTestId)}"]`;
+    if (document.querySelectorAll(selector).length === 1) {
+      return selector;
+    }
+  }
+  
+  // 7. Try other data attributes
+  const dataAttrs = Array.from(element.attributes).filter(attr => 
+    attr.name.startsWith('data-') && attr.name !== 'data-testid'
+  );
   for (const attr of dataAttrs) {
     const selector = `${tag}[${attr.name}="${CSS.escape(attr.value)}"]`;
+    if (document.querySelectorAll(selector).length === 1) {
+      return selector;
+    }
+  }
+  
+  // 8. Try role attribute (semantic)
+  const role = element.getAttribute('role');
+  if (role && role !== 'generic' && role !== 'presentation') {
+    const selector = `${tag}[role="${role}"]`;
     if (document.querySelectorAll(selector).length === 1) {
       return selector;
     }
@@ -220,3 +260,75 @@ export function getElementBounds(element: HTMLElement) {
   }
 }
 
+/**
+ * Find an element by its visible text content
+ * Useful as a fallback when CSS selectors fail
+ */
+export function findElementByText(
+  text: string,
+  options?: {
+    tag?: string;
+    exact?: boolean;
+    parent?: HTMLElement;
+  }
+): HTMLElement | null {
+  const { tag, exact = false, parent = document.body } = options || {};
+  const searchText = text.toLowerCase().trim();
+  
+  // Build selector
+  const selector = tag || '*';
+  const elements = parent.querySelectorAll(selector);
+  
+  for (const el of elements) {
+    const elText = (el.textContent || '').toLowerCase().trim();
+    
+    if (exact) {
+      if (elText === searchText) {
+        return el as HTMLElement;
+      }
+    } else {
+      // Partial match - element text contains search text or vice versa
+      if (elText.includes(searchText) || searchText.includes(elText.split(' ')[0])) {
+        // Prefer exact matches for buttons (avoid matching parent containers)
+        if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.getAttribute('role') === 'button') {
+          return el as HTMLElement;
+        }
+      }
+    }
+  }
+  
+  // Second pass: try to find closest interactive element
+  for (const el of elements) {
+    const elText = (el.textContent || '').toLowerCase().trim();
+    
+    if (elText.includes(searchText)) {
+      // Find nearest interactive parent
+      let current: HTMLElement | null = el as HTMLElement;
+      while (current && current !== parent) {
+        if (
+          current.tagName === 'BUTTON' ||
+          current.tagName === 'A' ||
+          current.getAttribute('role') === 'button' ||
+          current.onclick
+        ) {
+          return current;
+        }
+        current = current.parentElement;
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Check if a CSS selector is valid and matches elements
+ */
+export function isValidSelector(selector: string): boolean {
+  try {
+    document.querySelector(selector);
+    return true;
+  } catch {
+    return false;
+  }
+}

@@ -4,6 +4,7 @@
 
 import type { ActionCommand, ActionResult, PageContext } from '../types';
 import { cleanAndValidateSelector } from '../utils/selectorSanitizer';
+import { findElementByText } from '../utils';
 
 /**
  * Action Executor class
@@ -35,12 +36,28 @@ export class ActionExecutor {
       }
 
       // Find target element using sanitized selector
-      const element = this.findElement(command.target);
+      let element = this.findElement(command.target);
+      
+      // Fallback: try to find by text content if selector failed
+      if (!element && command.parameters?.text) {
+        const textHint = command.parameters.text as string;
+        console.log('[UUICS Executor] Selector failed, trying text fallback:', textHint);
+        
+        // Try to find button/link by text
+        const tagHint = command.target.includes('button') ? 'button' : 
+                        command.target.includes('a') ? 'a' : undefined;
+        element = findElementByText(textHint, { tag: tagHint });
+        
+        if (element) {
+          console.log('[UUICS Executor] ✅ Found element by text:', textHint);
+        }
+      }
+      
       if (!element) {
         return {
           success: false,
           message: 'Target element not found',
-          error: `No element matching selector: ${selectorValidation.selector} (original: ${command.target})`,
+          error: `No element matching selector: ${selectorValidation.selector} (original: ${command.target})${command.parameters?.text ? ` or text: "${command.parameters.text}"` : ''}`,
         };
       }
 

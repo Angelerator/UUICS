@@ -76,6 +76,8 @@ export {
   getElementSelector,
   runInIdle,
   getElementBounds,
+  findElementByText,
+  isValidSelector,
 } from './utils';
 
 export {
