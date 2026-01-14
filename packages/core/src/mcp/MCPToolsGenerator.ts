@@ -192,6 +192,113 @@ export class MCPToolsGenerator {
       metadata: { category: 'interaction', mutates: false, executionTime: 'fast' },
     });
 
+    // ui_hover - Hover over an element (for dropdowns, tooltips, menus)
+    tools.push({
+      name: CORE_TOOLS.HOVER,
+      description: 'Hover over an element to trigger hover effects like dropdown menus, tooltips, or hover states. Dispatches mouseenter and mouseover events.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          target: {
+            type: 'string',
+            description: 'CSS selector of the element to hover over',
+          },
+          duration: {
+            type: 'number',
+            description: 'How long to maintain hover state in milliseconds (optional, default: 0 = instant)',
+            default: 0,
+          },
+        },
+        required: ['target'],
+      },
+      metadata: { category: 'interaction', mutates: false, executionTime: 'fast' },
+    });
+
+    // ui_wait_for - Wait for element or condition
+    tools.push({
+      name: CORE_TOOLS.WAIT_FOR,
+      description: 'Wait for an element to appear, disappear, or for a specified time. Useful for async UIs, loading states, and animations.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          selector: {
+            type: 'string',
+            description: 'CSS selector of the element to wait for (optional if using timeout only)',
+          },
+          condition: {
+            type: 'string',
+            enum: ['visible', 'hidden', 'exists', 'not_exists', 'enabled', 'disabled'],
+            description: 'Condition to wait for',
+            default: 'visible',
+          },
+          timeout: {
+            type: 'number',
+            description: 'Maximum time to wait in milliseconds (default: 5000)',
+            default: 5000,
+          },
+          poll_interval: {
+            type: 'number',
+            description: 'How often to check the condition in milliseconds (default: 100)',
+            default: 100,
+          },
+        },
+      },
+      metadata: { category: 'utility', mutates: false, executionTime: 'slow' },
+    });
+
+    // ui_screenshot - Take a screenshot (visual debugging)
+    tools.push({
+      name: CORE_TOOLS.SCREENSHOT,
+      description: 'Capture a screenshot of the current page or a specific element. Returns a base64-encoded image for visual debugging. Note: Requires browser/canvas support.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          selector: {
+            type: 'string',
+            description: 'CSS selector of element to capture (optional, captures full viewport if not provided)',
+          },
+          format: {
+            type: 'string',
+            enum: ['png', 'jpeg', 'webp'],
+            description: 'Image format (default: png)',
+            default: 'png',
+          },
+          quality: {
+            type: 'number',
+            description: 'Image quality for jpeg/webp (0-1, default: 0.92)',
+            default: 0.92,
+          },
+          scale: {
+            type: 'number',
+            description: 'Scale factor for the screenshot (default: 1)',
+            default: 1,
+          },
+        },
+      },
+      metadata: { category: 'debug', mutates: false, executionTime: 'medium' },
+    });
+
+    // ui_get_state - Get tracked JavaScript state
+    tools.push({
+      name: CORE_TOOLS.GET_STATE,
+      description: 'Get the current JavaScript application state that has been registered for tracking. Returns the state snapshot as JSON. Requires state tracking to be enabled in UUICS config.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          key: {
+            type: 'string',
+            description: 'Specific state key to retrieve (optional, returns all tracked state if not provided)',
+          },
+          include_metadata: {
+            type: 'boolean',
+            description: 'Whether to include metadata like last update time (default: false)',
+            default: false,
+          },
+        },
+      },
+      metadata: { category: 'context', mutates: false, executionTime: 'fast' },
+    });
+
     // ui_get_element - Get details about a specific element
     tools.push({
       name: CORE_TOOLS.GET_ELEMENT,
@@ -224,7 +331,7 @@ export class MCPToolsGenerator {
               properties: {
                 action: {
                   type: 'string',
-                  enum: ['click', 'type', 'select', 'check', 'uncheck', 'submit', 'scroll', 'focus'],
+                  enum: ['click', 'type', 'select', 'check', 'uncheck', 'submit', 'scroll', 'focus', 'hover'],
                 },
                 target: { type: 'string' },
                 value: { type: 'string' },

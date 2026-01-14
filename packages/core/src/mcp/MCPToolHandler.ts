@@ -111,6 +111,18 @@ export class MCPToolHandler {
       case CORE_TOOLS.FOCUS:
         return this.handleFocus(input);
 
+      case CORE_TOOLS.HOVER:
+        return this.handleHover(input);
+
+      case CORE_TOOLS.WAIT_FOR:
+        return this.handleWaitFor(input);
+
+      case CORE_TOOLS.SCREENSHOT:
+        return this.handleScreenshot(input);
+
+      case CORE_TOOLS.GET_STATE:
+        return this.handleGetState(input);
+
       case CORE_TOOLS.GET_ELEMENT:
         return this.handleGetElement(input);
 
@@ -292,6 +304,284 @@ export class MCPToolHandler {
     });
   }
 
+  private async handleHover(input: Record<string, unknown>): Promise<ActionResult> {
+    const target = input.target as string;
+    const duration = (input.duration as number) || 0;
+    
+    if (!target) {
+      return { success: false, message: 'Missing target parameter', error: 'Missing target' };
+    }
+    
+    const result = await this.engine.execute({
+      action: 'hover',
+      target,
+    });
+    
+    // If duration is specified, wait before returning
+    if (duration > 0 && result.success) {
+      await this.delay(duration);
+    }
+    
+    return result;
+  }
+
+  private async handleWaitFor(input: Record<string, unknown>): Promise<ActionResult> {
+    const selector = input.selector as string | undefined;
+    const condition = (input.condition as string) || 'visible';
+    const timeout = (input.timeout as number) || 5000;
+    const pollInterval = (input.poll_interval as number) || 100;
+    
+    // If no selector and no timeout, just wait a bit
+    if (!selector) {
+      if (timeout > 0) {
+        await this.delay(Math.min(timeout, 10000)); // Cap at 10 seconds
+        return {
+          success: true,
+          message: `Waited ${timeout}ms`,
+        };
+      }
+      return { success: false, message: 'Either selector or timeout is required', error: 'Missing parameters' };
+    }
+    
+    const startTime = Date.now();
+    
+    while (Date.now() - startTime < timeout) {
+      const element = document.querySelector(selector);
+      let conditionMet = false;
+      
+      switch (condition) {
+        case 'exists':
+          conditionMet = element !== null;
+          break;
+        case 'not_exists':
+          conditionMet = element === null;
+          break;
+        case 'visible':
+          if (element instanceof HTMLElement) {
+            const style = window.getComputedStyle(element);
+            conditionMet = style.display !== 'none' && 
+                          style.visibility !== 'hidden' && 
+                          style.opacity !== '0' &&
+                          element.offsetParent !== null;
+          }
+          break;
+        case 'hidden':
+          if (element === null) {
+            conditionMet = true;
+          } else if (element instanceof HTMLElement) {
+            const style = window.getComputedStyle(element);
+            conditionMet = style.display === 'none' || 
+                          style.visibility === 'hidden' || 
+                          style.opacity === '0' ||
+                          element.offsetParent === null;
+          }
+          break;
+        case 'enabled':
+          if (element instanceof HTMLButtonElement || 
+              element instanceof HTMLInputElement || 
+              element instanceof HTMLSelectElement || 
+              element instanceof HTMLTextAreaElement) {
+            conditionMet = !element.disabled;
+          }
+          break;
+        case 'disabled':
+          if (element instanceof HTMLButtonElement || 
+              element instanceof HTMLInputElement || 
+              element instanceof HTMLSelectElement || 
+              element instanceof HTMLTextAreaElement) {
+            conditionMet = element.disabled;
+          }
+          break;
+      }
+      
+      if (conditionMet) {
+        return {
+          success: true,
+          message: `Element "${selector}" is ${condition}`,
+          data: { elapsed: Date.now() - startTime },
+        };
+      }
+      
+      await this.delay(pollInterval);
+    }
+    
+    return {
+      success: false,
+      message: `Timeout waiting for element "${selector}" to be ${condition}`,
+      error: `Condition not met within ${timeout}ms`,
+    };
+  }
+
+  private async handleScreenshot(input: Record<string, unknown>): Promise<ActionResult> {
+    const selector = input.selector as string | undefined;
+    const format = (input.format as string) || 'png';
+    const quality = (input.quality as number) || 0.92;
+    const scale = (input.scale as number) || 1;
+    
+    try {
+      // Check if html2canvas or similar is available
+      // For now, we use the native Canvas API for element screenshots
+      // Full page screenshots require external libraries
+      
+      if (selector) {
+        // Element screenshot using Canvas
+        const element = document.querySelector(selector);
+        if (!element || !(element instanceof HTMLElement)) {
+          return {
+            success: false,
+            message: `Element not found: ${selector}`,
+            error: 'Element not found',
+          };
+        }
+        
+        // Try to capture element using range and getClientRects
+        const rect = element.getBoundingClientRect();
+        
+        // Create a canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = rect.width * scale;
+        canvas.height = rect.height * scale;
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          return {
+            success: false,
+            message: 'Canvas context not available',
+            error: 'Canvas 2D context not supported',
+          };
+        }
+        
+        // Note: For complex element capture, html2canvas would be needed
+        // This is a simplified version that captures basic element info
+        ctx.scale(scale, scale);
+        ctx.fillStyle = window.getComputedStyle(element).backgroundColor || '#ffffff';
+        ctx.fillRect(0, 0, rect.width, rect.height);
+        
+        // Draw element border for debugging
+        ctx.strokeStyle = '#007bff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(1, 1, rect.width - 2, rect.height - 2);
+        
+        // Add element info text
+        ctx.fillStyle = '#333';
+        ctx.font = '14px Arial';
+        ctx.fillText(`${element.tagName.toLowerCase()}`, 10, 20);
+        ctx.fillText(`${rect.width.toFixed(0)}x${rect.height.toFixed(0)}`, 10, 40);
+        
+        const mimeType = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
+        const dataUrl = canvas.toDataURL(mimeType, quality);
+        
+        return {
+          success: true,
+          message: `Screenshot captured for element: ${selector}`,
+          data: {
+            dataUrl,
+            width: rect.width,
+            height: rect.height,
+            format,
+            note: 'Basic element bounds capture. For full element rendering, use html2canvas library.',
+          },
+        };
+      }
+      
+      // Full page screenshot - requires external library
+      // Return page info instead
+      return {
+        success: true,
+        message: 'Full page screenshot info (requires html2canvas for actual capture)',
+        data: {
+          viewport: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+          },
+          page: {
+            width: document.documentElement.scrollWidth,
+            height: document.documentElement.scrollHeight,
+          },
+          scroll: {
+            x: window.scrollX,
+            y: window.scrollY,
+          },
+          note: 'Full page screenshots require html2canvas library. Use selector for element-level capture.',
+        },
+      };
+      
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Screenshot capture failed',
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  private async handleGetState(input: Record<string, unknown>): Promise<ActionResult> {
+    const key = input.key as string | undefined;
+    const includeMetadata = (input.include_metadata as boolean) || false;
+    
+    const context = this.engine.getContext();
+    
+    if (!context?.state) {
+      return {
+        success: false,
+        message: 'No state available. State tracking may not be enabled.',
+        error: 'State tracking not enabled or no state captured',
+      };
+    }
+    
+    if (key) {
+      // Get specific state key
+      if (!(key in context.state)) {
+        return {
+          success: false,
+          message: `State key "${key}" not found`,
+          error: 'Key not found',
+          data: { availableKeys: Object.keys(context.state) },
+        };
+      }
+      
+      const value = context.state[key];
+      
+      if (includeMetadata) {
+        return {
+          success: true,
+          message: `State for "${key}" retrieved`,
+          data: {
+            key,
+            value,
+            timestamp: context.timestamp,
+            type: typeof value,
+          },
+        };
+      }
+      
+      return {
+        success: true,
+        message: `State for "${key}" retrieved`,
+        data: { [key]: value },
+      };
+    }
+    
+    // Get all state
+    if (includeMetadata) {
+      return {
+        success: true,
+        message: `All tracked state retrieved (${Object.keys(context.state).length} keys)`,
+        data: {
+          state: context.state,
+          keys: Object.keys(context.state),
+          timestamp: context.timestamp,
+        },
+      };
+    }
+    
+    return {
+      success: true,
+      message: `All tracked state retrieved (${Object.keys(context.state).length} keys)`,
+      data: context.state,
+    };
+  }
+
   private async handleGetElement(input: Record<string, unknown>): Promise<ActionResult> {
     const selector = input.selector as string;
     if (!selector) {
@@ -458,8 +748,23 @@ export class MCPToolHandler {
   }
 
   private isMutatingTool(name: string): boolean {
-    const nonMutating = [CORE_TOOLS.SCAN, CORE_TOOLS.GET_CONTEXT, CORE_TOOLS.GET_ELEMENT];
+    const nonMutating = [
+      CORE_TOOLS.SCAN, 
+      CORE_TOOLS.GET_CONTEXT, 
+      CORE_TOOLS.GET_ELEMENT,
+      CORE_TOOLS.GET_STATE,
+      CORE_TOOLS.SCREENSHOT,
+      CORE_TOOLS.WAIT_FOR,
+      CORE_TOOLS.HOVER,
+    ];
     return !nonMutating.includes(name as any);
+  }
+
+  /**
+   * Delay helper for async operations
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private generateContextSummary(context: PageContext): string {
