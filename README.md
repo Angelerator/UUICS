@@ -39,9 +39,10 @@ UUICS scans your web page, extracts all interactive elements (buttons, inputs, d
 ### Core Capabilities
 - **🔍 DOM Scanning**: Automatically detects all interactive elements
 - **📝 Context Serialization**: JSON, Natural Language, or OpenAPI formats
-- **⚡ Action Execution**: Click, type, select, check, and more
+- **⚡ Action Execution**: Click, type, select, check, hover, and more
 - **🔄 State Tracking**: Track JavaScript variables alongside DOM state
 - **🛡️ Sensitive Data Protection**: Automatically exclude passwords and tokens
+- **🔌 MCP Support**: Native Model Context Protocol integration for Claude
 
 ### Framework Support
 - **Vanilla JavaScript**: Direct engine usage
@@ -49,7 +50,7 @@ UUICS scans your web page, extracts all interactive elements (buttons, inputs, d
 - **Vue, Angular, etc.**: Engine works with any framework
 
 ### AI Model Support
-- **Claude**: Full support with natural language context
+- **Claude**: Full support with MCP tool calling + natural language context
 - **GPT-4/OpenAI**: Function calling with OpenAPI format
 - **Any LLM**: JSON format works universally
 
@@ -121,6 +122,52 @@ const action = parseActionFromResponse(response);
 await uuics.execute(action);
 ```
 
+### With MCP (Model Context Protocol) 🆕
+
+UUICS includes native MCP support for Claude's tool calling capabilities:
+
+```javascript
+import { 
+  UUICSEngine, 
+  MCPToolsGenerator, 
+  MCPToolHandler 
+} from '@angelerator/uuics-core';
+
+// Initialize UUICS
+const engine = new UUICSEngine();
+await engine.initialize();
+await engine.scan();
+
+// Generate MCP tools from current page context
+const generator = new MCPToolsGenerator();
+const tools = generator.generateTools(engine.getContext());
+
+// Send tools to Claude
+const response = await anthropic.messages.create({
+  model: 'claude-sonnet-4-20250514',
+  max_tokens: 1024,
+  tools: tools.map(t => ({
+    name: t.name,
+    description: t.description,
+    input_schema: t.input_schema,
+  })),
+  messages: [{ role: 'user', content: 'Click the submit button' }]
+});
+
+// Handle tool calls from Claude
+const handler = new MCPToolHandler(engine);
+for (const block of response.content) {
+  if (block.type === 'tool_use') {
+    const result = await handler.handleToolCall({
+      name: block.name,
+      input: block.input,
+      id: block.id,
+    });
+    console.log('Tool result:', result);
+  }
+}
+```
+
 ## 📖 API Reference
 
 ### UUICSEngine
@@ -172,6 +219,127 @@ type ActionType =
   | 'scroll'     // Scroll to element
   | 'hover'      // Hover over element
   | 'custom';    // Execute custom script
+```
+
+## 🔌 MCP (Model Context Protocol) Support
+
+UUICS provides native MCP integration for Claude and other MCP-compatible AI models.
+
+### MCP Classes
+
+| Class | Description |
+|-------|-------------|
+| `MCPToolsGenerator` | Generates MCP tool definitions from page context |
+| `MCPToolHandler` | Handles MCP tool calls and executes UI actions |
+
+### MCP Core Tools (16 Total)
+
+| Tool | Category | Description |
+|------|----------|-------------|
+| `ui_scan` | context | Scan page to discover interactive elements |
+| `ui_get_context` | context | Get current context without re-scanning |
+| `ui_get_element` | context | Get details about a specific element |
+| `ui_get_state` | context | Query tracked JavaScript application state |
+| `ui_click` | interaction | Click on an element |
+| `ui_type` | interaction | Type text into an input field |
+| `ui_select` | interaction | Select an option from dropdown |
+| `ui_check` | interaction | Check a checkbox |
+| `ui_uncheck` | interaction | Uncheck a checkbox |
+| `ui_submit` | interaction | Submit a form |
+| `ui_scroll` | interaction | Scroll to bring element into view |
+| `ui_focus` | interaction | Set focus on an element |
+| `ui_hover` | interaction | Hover over element (dropdowns/tooltips) |
+| `ui_wait_for` | utility | Wait for element or condition |
+| `ui_screenshot` | debug | Capture element/page for visual debugging |
+| `ui_execute_batch` | interaction | Execute multiple actions in sequence |
+
+### MCP Configuration
+
+```typescript
+import { MCPToolsGenerator, MCPToolHandler } from '@angelerator/uuics-core';
+
+const generator = new MCPToolsGenerator({
+  includeCoreTools: true,       // Include all 16 core tools
+  generateDynamicTools: true,   // Generate element-specific tools
+  maxDynamicTools: 50,          // Limit dynamic tools
+  toolPrefix: 'ui_',            // Tool name prefix
+  elementTypes: ['button', 'input', 'select', 'checkbox', 'link'],
+  customTools: [],              // Add your own tools
+});
+
+// Generate tools for current page state
+const tools = generator.generateTools(engine.getContext());
+
+// Create handler to execute tool calls
+const handler = new MCPToolHandler(engine);
+```
+
+### Dynamic Tools
+
+MCP automatically generates element-specific tools based on the current page:
+
+```
+# For a page with:
+# - Submit button (#submit-btn)
+# - Email input (#email)
+# - Country dropdown (#country)
+
+Generated dynamic tools:
+- ui_click_submit        → Clicks the Submit button
+- ui_set_email           → Sets the Email input value
+- ui_select_country      → Selects a Country option
+```
+
+### ui_wait_for Conditions
+
+| Condition | Description |
+|-----------|-------------|
+| `visible` | Element is visible in viewport |
+| `hidden` | Element is hidden or removed |
+| `exists` | Element exists in DOM |
+| `not_exists` | Element does not exist |
+| `enabled` | Form element is enabled |
+| `disabled` | Form element is disabled |
+
+```typescript
+// Wait for loading spinner to disappear
+await handler.handleToolCall({
+  name: 'ui_wait_for',
+  input: {
+    selector: '.loading-spinner',
+    condition: 'hidden',
+    timeout: 10000,
+  }
+});
+```
+
+### ui_screenshot Usage
+
+```typescript
+// Capture element bounds
+const result = await handler.handleToolCall({
+  name: 'ui_screenshot',
+  input: {
+    selector: '#main-form',
+    format: 'png',
+    scale: 2,
+  }
+});
+// Returns: { dataUrl: 'data:image/png;base64,...', width, height }
+```
+
+### ui_get_state Usage
+
+```typescript
+// Query tracked application state
+const result = await handler.handleToolCall({
+  name: 'ui_get_state',
+  input: {
+    key: 'user',              // Optional: specific key
+    include_metadata: true,   // Include timestamp
+  }
+});
+// Returns: { key: 'user', value: {...}, timestamp: 1234567890 }
 ```
 
 ### Configuration
@@ -286,6 +454,11 @@ uuics/
 │       │   ├── aggregator/   # Context aggregation
 │       │   ├── serializer/   # Output formatting
 │       │   ├── executor/     # Action execution
+│       │   ├── mcp/          # MCP (Model Context Protocol) support
+│       │   │   ├── types.ts
+│       │   │   ├── MCPToolsGenerator.ts
+│       │   │   ├── MCPToolHandler.ts
+│       │   │   └── index.ts
 │       │   └── UUICSEngine.ts
 │       └── package.json
 │
