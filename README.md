@@ -14,24 +14,44 @@ UUICS bridges the gap between AI models and web UIs by providing structured cont
 UUICS scans your web page, extracts all interactive elements (buttons, inputs, dropdowns, etc.), and provides this information in AI-friendly formats. When an AI decides to take action, UUICS executes it safely on the page.
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         HOW UUICS WORKS                                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│   Your Web Page          UUICS Engine            AI Model                    │
-│   ┌──────────┐          ┌──────────┐          ┌──────────┐                  │
-│   │ Buttons  │ ──scan──▶│ Context  │ ──send──▶│ Analyze  │                  │
-│   │ Inputs   │          │ Builder  │          │ & Decide │                  │
-│   │ Forms    │          └──────────┘          └──────────┘                  │
-│   │ Dropdowns│                                     │                        │
-│   └──────────┘                                     │                        │
-│        ▲                                           │                        │
-│        │               ┌──────────┐                │                        │
-│        └──execute──────│ Action   │◀───command─────┘                        │
-│                        │ Executor │                                          │
-│                        └──────────┘                                          │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────┐
+│                              HOW UUICS WORKS                                        │
+├────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                     │
+│   ┌─────────────────────┐         ┌─────────────────────┐         ┌──────────────┐ │
+│   │     YOUR WEB PAGE   │         │    UUICS ENGINE     │         │   AI MODEL   │ │
+│   │                     │         │                     │         │              │ │
+│   │  • Buttons          │  scan   │  ┌───────────────┐  │  send   │  Claude,     │ │
+│   │  • Inputs           │ ───────▶│  │ DOM Scanner   │  │ ───────▶│  GPT-4,      │ │
+│   │  • Forms            │         │  │               │  │         │  or any LLM  │ │
+│   │  • Dropdowns        │         │  │ • Elements    │  │         │              │ │
+│   │  • Radio buttons    │         │  │ • States      │  │         │  Analyzes    │ │
+│   │  • Checkboxes       │         │  │ • Attributes  │  │         │  context &   │ │
+│   │  • Links            │         │  │ • Labels      │  │         │  decides     │ │
+│   │  • Custom elements  │         │  └───────────────┘  │         │  action      │ │
+│   │                     │         │         │           │         │              │ │
+│   │  Framework Support: │         │         ▼           │         └──────┬───────┘ │
+│   │  ✓ Radix UI         │         │  ┌───────────────┐  │                │         │
+│   │  ✓ Shadcn/ui        │         │  │  Serializer   │  │                │         │
+│   │  ✓ MUI/Chakra       │         │  │               │  │                │         │
+│   │  ✓ Headless UI      │         │  │ JSON/Natural/ │  │                │         │
+│   │  ✓ Vanilla HTML     │         │  │ OpenAPI/MCP   │  │                │         │
+│   └─────────────────────┘         │  └───────────────┘  │                │         │
+│            ▲                      │                     │                │         │
+│            │                      │  ┌───────────────┐  │                │         │
+│            │                      │  │Action Executor│  │                │         │
+│            │        execute       │  │               │◀─┼────────────────┘         │
+│            └──────────────────────┼──│ click, type,  │  │     command              │
+│                                   │  │ select, check │  │                          │
+│   Element Detection:              │  │ hover, submit │  │                          │
+│   ─────────────────               │  └───────────────┘  │                          │
+│   • data-uuics-* attributes       │                     │                          │
+│   • aria-label/aria-checked       └─────────────────────┘                          │
+│   • data-state (Radix UI)                                                          │
+│   • role="button/radio/..."                                                        │
+│   • Standard HTML attributes                                                       │
+│                                                                                     │
+└────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## ✨ Features
