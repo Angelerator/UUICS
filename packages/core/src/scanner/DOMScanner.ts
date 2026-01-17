@@ -608,7 +608,8 @@ export class DOMScanner {
       'type', 'name', 'placeholder', 'required', 'disabled', 'readonly', 
       'maxlength', 'pattern', 'min', 'max', 'step', 'role', 'contenteditable',
       'aria-label', 'aria-labelledby', 'aria-describedby', 'aria-checked',
-      'aria-selected', 'aria-expanded', 'aria-pressed', 'open', 'value', 'multiple'
+      'aria-selected', 'aria-expanded', 'aria-pressed', 'open', 'value', 'multiple',
+      'data-state' // Radix UI uses this for checked/unchecked state
     ];
     
     for (const attr of relevantAttrs) {
@@ -681,8 +682,15 @@ export class DOMScanner {
     }
     
     if (role === 'checkbox' || role === 'radio' || role === 'switch') {
-      const checked = element.getAttribute('aria-checked');
-      return checked === 'true';
+      // Check aria-checked first
+      const ariaChecked = element.getAttribute('aria-checked');
+      if (ariaChecked) return ariaChecked === 'true';
+      
+      // Check data-state for Radix UI components
+      const dataState = element.getAttribute('data-state');
+      if (dataState) return dataState === 'checked' || dataState === 'on';
+      
+      return false;
     }
     
     return undefined;
