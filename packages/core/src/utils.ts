@@ -90,6 +90,7 @@ export function isElementVisible(element: HTMLElement): boolean {
  */
 export function getElementSelector(element: HTMLElement): string {
   const tag = element.tagName.toLowerCase();
+  
   // 1. If element has an ID, use it
   if (element.id) {
     return `#${CSS.escape(element.id)}`;
@@ -98,7 +99,6 @@ export function getElementSelector(element: HTMLElement): string {
   // 2. Try name attribute for form elements
   if (element.getAttribute('name')) {
     const name = element.getAttribute('name')!;
-    const tag = element.tagName.toLowerCase();
     const selector = `${tag}[name="${CSS.escape(name)}"]`;
     // Verify it's unique
     if (document.querySelectorAll(selector).length === 1) {

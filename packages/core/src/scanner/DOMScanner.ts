@@ -605,11 +605,20 @@ export class DOMScanner {
   private getRelevantAttributes(element: HTMLElement): Record<string, string | boolean | number> {
     const attrs: Record<string, string | boolean | number> = {};
     const relevantAttrs = [
-      'type', 'name', 'placeholder', 'required', 'disabled', 'readonly', 
-      'maxlength', 'pattern', 'min', 'max', 'step', 'role', 'contenteditable',
+      // Identity attributes (CRITICAL for selectors)
+      'id', 'name', 'title',
+      // Test/automation attributes
+      'data-testid', 'data-uuics-action', 'data-cy', 'data-test',
+      // Form attributes
+      'type', 'placeholder', 'required', 'disabled', 'readonly', 
+      'maxlength', 'pattern', 'min', 'max', 'step', 'value', 'multiple',
+      // Accessibility attributes  
+      'role', 'contenteditable',
       'aria-label', 'aria-labelledby', 'aria-describedby', 'aria-checked',
-      'aria-selected', 'aria-expanded', 'aria-pressed', 'open', 'value', 'multiple',
-      'data-state' // Radix UI uses this for checked/unchecked state
+      'aria-selected', 'aria-expanded', 'aria-pressed', 
+      // UI framework state attributes
+      'data-state', // Radix UI uses this for checked/unchecked state
+      'open',
     ];
     
     for (const attr of relevantAttrs) {
